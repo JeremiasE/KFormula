@@ -1,0 +1,148 @@
+<ui version="4.0" >
+ <class>DefaultToolWidget</class>
+ <widget class="QWidget" name="DefaultToolWidget" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>154</width>
+    <height>62</height>
+   </rect>
+  </property>
+  <property name="focusPolicy" >
+   <enum>Qt::NoFocus</enum>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" >
+   <property name="margin" >
+    <number>0</number>
+   </property>
+   <item rowspan="2" row="0" column="0" >
+    <widget class="KoPositionSelector" native="1" name="positionSelector" />
+   </item>
+   <item row="0" column="1" >
+    <widget class="QLabel" name="label" >
+     <property name="text" >
+      <string>X:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2" >
+    <widget class="KoUnitDoubleSpinBox" name="positionXSpinBox" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimum" >
+      <double>-10000.000000000000000</double>
+     </property>
+     <property name="maximum" >
+      <double>10000.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3" >
+    <widget class="KoUnitDoubleSpinBox" name="widthSpinBox" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimum" >
+      <double>-10000.000000000000000</double>
+     </property>
+     <property name="maximum" >
+      <double>10000.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item rowspan="2" row="0" column="4" >
+    <widget class="KoAspectButton" name="aspectButton" >
+     <property name="text" >
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" >
+    <widget class="QLabel" name="label_2" >
+     <property name="text" >
+      <string>Y:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2" >
+    <widget class="KoUnitDoubleSpinBox" name="positionYSpinBox" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimum" >
+      <double>-10000.000000000000000</double>
+     </property>
+     <property name="maximum" >
+      <double>10000.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3" >
+    <widget class="KoUnitDoubleSpinBox" name="heightSpinBox" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimum" >
+      <double>-10000.000000000000000</double>
+     </property>
+     <property name="maximum" >
+      <double>10000.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2" colspan="2" >
+    <spacer name="verticalSpacer" >
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>20</width>
+       <height>7</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KoUnitDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>KoUnitDoubleSpinBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KoAspectButton</class>
+   <extends>QLabel</extends>
+   <header>KoAspectButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KoPositionSelector</class>
+   <extends>QWidget</extends>
+   <header>KoPositionSelector.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>positionXSpinBox</tabstop>
+  <tabstop>positionYSpinBox</tabstop>
+  <tabstop>widthSpinBox</tabstop>
+  <tabstop>heightSpinBox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

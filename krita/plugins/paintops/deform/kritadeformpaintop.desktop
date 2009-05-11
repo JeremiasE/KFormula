@@ -1,0 +1,27 @@
+[Desktop Entry]
+Name=Deform brush
+Name[ca]=Pinzell deformat
+Name[da]=Deformationspensel
+Name[de]=Verzerrungspinsel
+Name[el]=Πινέλο παραμόρφωσης
+Name[es]=Pincel de deformación
+Name[et]=Moonutuspintsel
+Name[gl]=Pincel de deformación
+Name[hne]=डिफार्म ब्रस
+Name[it]=Pennello deformato
+Name[ja]=変形ブラシ
+Name[kk]=Қысайған кылқалам
+Name[lv]=Deformēšanas ota
+Name[nds]=Verformen-Pinsel
+Name[nl]=Vervorm penseel
+Name[pt]=Deformar o pincel
+Name[pt_BR]=Deformar o pincel
+Name[sv]=Deformerande pensel
+Name[tr]=Bozma fırçası
+Name[uk]=Пензель викривлення
+Name[x-test]=xxDeform brushxx
+Name[zh_TW]=變形筆刷
+X-KDE-ServiceTypes=Krita/Paintop
+Type=Service
+X-KDE-Library=kritadeformpaintop
+X-Krita-Version=3

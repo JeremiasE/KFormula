@@ -1,0 +1,19 @@
+[Desktop Entry]
+Name=RulerAssistantTool
+Name[ca]=EinaAssistentRegla
+Name[da]=LinealAssistentVærktøj
+Name[de]=Hilfslineal-Werkzeug
+Name[el]=Εργαλείο βοηθού κανόνα
+Name[et]=Joonlauaabilise tööriist
+Name[gl]=AsistenteRegra
+Name[it]=Strumento dell'assistente dei righelli
+Name[nds]=Linealenhölper-Warktüüch
+Name[nl]=Assistent voor liniaal
+Name[sv]=Linjalguideverktyg
+Name[tr]=Cetvel Yardımcısı Aracı
+Name[x-test]=xxRulerAssistantToolxx
+Name[zh_TW]=尺規小助手工具
+X-KDE-ServiceTypes=Krita/Tool
+Type=Service
+X-KDE-Library=kritarulerassistanttool
+X-Krita-Version=3

@@ -1,0 +1,30 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=KOffice/ColorSpaceExtension
+Comment=A module implementing an extension to a colorspace of the Pigment Color Manipulation System
+Comment[ca]=Un mòdul que implementa una extensió a un espai de colors del Sistema de Manipulació Pigment Color
+Comment[da]=Et modul som implementerer et udvidelse til et farveområde til Pigment Color Manipulation System
+Comment[de]=Ein Modul, das eine Erweiterung eines Farbraums zur Benutzung mit dem „Pigment Color Manipulation System“ implementiert
+Comment[el]=Ένα άρθρωμα που υλοποιεί μια επέκταση σε έναν χρωματικό χώρο με χρήση του συστήματος χειρισμού χρωμάτων βαφής
+Comment[en_GB]=A module implementing an extension to a colourspace of the Pigment Colour Manipulation System
+Comment[es]=Un módulo que implementa una extensión a un espacio de color del sistema de manipulación de colores Pigment
+Comment[et]=Pigmenti värvikäitlussüsteemi värviruumi laiendit teostav moodul
+Comment[fi]=Moduli, joka laajentaa Pigment Color Manipulation System -väriavaruuden laajennuksen
+Comment[fy]=In útwreiding dy't in folslein kleurgebiet ymplementearret dat brûkt kin wurde mei libkritacolor
+Comment[gl]=Um módulo que define unha extensión para os espazos de cores para o seu uso co Sistema de Manipulación dos Pigmentos de Cores
+Comment[it]=Un modulo che implementa un'estensione a uno spazio di colori da usare con il sistema di manipolazione dei pigmenti dei colori
+Comment[kk]=Пигмент түсімен айналасу жүйесінің түстер кеңістігінің кеңейтуін іске асыратын модулі
+Comment[nds]=En Moduul, dat en Verwiedern för den Bruuk mit Pigmentklöör-Bewerkensysteem na en Klöörruum inbuut
+Comment[nl]=Een module die een uitbreiding voor een kleurgebied implementeert van het Pigment Color Manipulation System
+Comment[pt]=Um módulo que implementa um espaço de cores completo para usar com o Sistema de Manipulação de Cores por Pigmentos
+Comment[pt_BR]=Um módulo que implementa uma extensão para espaço de cores do Sistema de Manipulação de Pigmeto de Cor
+Comment[sv]=En modul som implementerar en fullständig färgrymd för användning med systemet för hantering av pigmentfärg
+Comment[ta]= தெளிவான வண்ணத்தின் சிறிய பகுதியை அதிகரித்து ஒரு கூரை உண்டாக்குகிறதுஉருவாக்கம் கணினி
+Comment[tr]=Pigment Rengi ile kullanmak için renk boşluğunu oluşturan bir modül
+Comment[uk]=Модуль впровадження повного простору кольорів для використання з Системою керування кольорами пігментів
+Comment[x-test]=xxA module implementing an extension to a colorspace of the Pigment Color Manipulation Systemxx
+Comment[zh_TW]=實作完整色彩空間以使用 Pigment 色彩處理系統的模組
+[PropertyDef::X-Pigment-MinVersion]
+Type=int
+[PropertyDef::X-Flake-PluginVersion]
+Type=int

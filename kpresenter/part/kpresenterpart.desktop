@@ -1,0 +1,22 @@
+[Desktop Entry]
+Name=KPresenter
+Name[af]=Kpresenter
+Name[cy]=KCyflwynydd
+Name[hi]=के-प्रेजेंटर
+Name[hne]=के-प्रेजेंटर
+Name[mk]=K-презентација
+Name[ne]=केडीई प्रस्तुतकर्ता
+Name[nl]=Kpresenter
+Name[sv]=Kpresenter
+Name[ta]=கேபிரஸன்டர்
+Name[tr]=Kpresenter
+Name[x-test]=xxKPresenterxx
+Name[zh_TW]=簡報_KPresenter
+X-KDE-Library=libkpresenterpart
+MimeType=application/vnd.oasis.opendocument.presentation;application/vnd.oasis.opendocument.presentation-template;application/x-kpresenter;application/mspowerpoint;
+Type=Service
+X-KDE-ServiceTypes=KOfficePart,KParts/ReadOnlyPart,KParts/ReadWritePart
+X-KDE-NativeMimeType=application/vnd.oasis.opendocument.presentation
+X-KDE-NativeOasisMimeType=application/vnd.oasis.opendocument.presentation
+X-KDE-ExtraNativeMimeTypes=application/vnd.oasis.opendocument.presentation-template
+Icon=kpresenter

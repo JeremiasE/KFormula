@@ -1,0 +1,16 @@
+add_subdirectory( defaulttools )
+add_subdirectory( selectiontools )
+add_subdirectory( tool_crop )
+#add_subdirectory( tool_curves )
+add_subdirectory( tool_polygon )
+add_subdirectory( tool_polyline )
+add_subdirectory( tool_selectsimilar )
+add_subdirectory( tool_star )
+add_subdirectory( tool_transform )
+add_subdirectory( tool_perspectivegrid )
+add_subdirectory( tool_grid )
+#add_subdirectory( tool_perspectivetransform )
+
+add_subdirectory ( tool_dyna )
+
+message("Krita: Port the perspective transform tool")

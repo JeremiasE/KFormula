@@ -1,0 +1,27 @@
+[Desktop Entry]
+Name=CTL Color Spaces
+Name[da]=CTL-farverum
+Name[en_GB]=CTL Colour Spaces
+Name[et]=CTL värviruumid
+Name[it]=Spazi di colore CTL
+Name[pt]=Espaços de Cores CTL
+Name[pt_BR]=Espaços de Cores CTL
+Name[sv]=CTL-färgrymder
+Name[uk]=Простори кольорів CTL
+Name[x-test]=xxCTL Color Spacesxx
+Name[zh_TW]=CTL 色彩空間
+Comment=Color model written using the Color Transformation Language.
+Comment[en_GB]=Colour model written using the Colour Transformation Language.
+Comment[et]=CTL-is (Color Transformation Language) kirja pandud värvimudel
+Comment[it]=Modello di colore scritto nel linguaggio di trasformazione dei colori, o «Color Transformation Language».
+Comment[pt]=Modelo de cores criado com a Linguagem de Transformações de Cores (CTL).
+Comment[pt_BR]=Modelo de cores criado com a Linguagem de Transformações de Cores (CTL).
+Comment[sv]=Färgmodell skriven med färgtransformeringsspråket CTL.
+Comment[uk]=Модель кольорів, описана за допомогою Color Transformation Language (мови перетворення кольорів).
+Comment[x-test]=xxColor model written using the Color Transformation Language.xx
+Comment[zh_TW]=使用色彩轉換語言（Color Transformation Language）撰寫的色彩模式。
+X-KDE-ServiceTypes=KOffice/ColorSpace
+Type=Service
+X-KDE-Library=krita_ctlcs_plugin
+X-Pigment-MinVersion=0
+X-Flake-PluginVersion=1

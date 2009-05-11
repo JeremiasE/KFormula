@@ -1,0 +1,27 @@
+if(MSVC)
+  # avoid "cannot open file 'LIBC.lib'" error
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:LIBC.LIB")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:LIBC.LIB")
+endif(MSVC)
+
+macro_optional_find_package(Spnav)
+
+macro_log_feature(SPNAV_FOUND "Spnav" "3Dconnexion device driver and SDK" "http://spacenav.sourceforge.net/" FALSE "" "Required by SpaceNavigator 3D mouse plugin")
+
+add_subdirectory( scan )
+add_subdirectory( colorspaces )
+add_subdirectory( variables )
+add_subdirectory( defaultTools )
+add_subdirectory( dockers )
+add_subdirectory( textediting )
+add_subdirectory( simpletextedit )
+add_subdirectory( pathshapes )
+add_subdirectory( pictureshape )
+add_subdirectory( textshape )
+add_subdirectory( paragraphtool )
+macro_optional_add_subdirectory( musicshape )
+add_subdirectory( divineProportion )
+IF (SPNAV_FOUND)
+    add_subdirectory( spacenavigator )
+ENDIF (SPNAV_FOUND)
+add_subdirectory( artistictextshape )

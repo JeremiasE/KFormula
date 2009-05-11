@@ -1,0 +1,504 @@
+This file describes the tasks at hand for making KSpread a better product.
+
+Legend
+======
+
+Status field
+
+----	No work has been done on this (sub)task yet.
+DONE    Task is all done
+done    This subtask is done
+****	This (sub)task cannot be fixed with the current technology.
+        It has to wait until something in the internals is fixed.
+
+Prio field
+
+S	Involves string changes.  Must be done before the freeze.
+1	Important task.  Should definitely be fixed.
+2	Semi-important task.  Should be fixed if possible, but can be
+	moved to the next release if necessary.
+3	Nice to have.  Should be fixed if there is time. (yeah, right)
+
+
+
+Things to do after the release of KOffice 2.0
+=============================================
+
+Item										Prio	Status
+----------------------------------------------------------------------------------------------
+
+* Databases									1	----
+  Currently Database is used solely for the autofilter functionality.
+  Generalize it: Rewrite the filter code, so that Database carries a data
+  model. Such a generic data providing class will allow to add data imports of
+  any textual kind.
+  The OpenDocument spec urges to implement database queries, sorting and
+  subtotal implementation this way.
+
+* Page View Mode								1	----
+  Add a page view mode. This would be a more intuitive way to see the printing
+  layout. The pages should be based on KoShapeContainer, so that the TableShape
+  becomes a child of it and can rely on its dimension to layout the table
+  pages.
+
+* Source-/TargetRange concept							1	----
+  Currently, cell ranges, which data is exported, are called Binding. The
+  opposite, cell ranges, that contain imported data, are called Database.
+
+  Binding's only tasks are to track the movement of the range and to inform
+  about value changes. To achieve this it contains a data model, which is used
+  by those who want to work with the range's data. Nothing more; very
+  minimalistic, very generic. The term SourceRange fits well here.
+
+  Database, on the other hand, is more specialised, even if the filter code
+  gets rewritten, so that Database contains a data model. That's because it
+  was developed according to the database range in the OpenDocument spec and
+  this consists of more than just a target range. For the case of filters or
+  sorting, such a database always has got a source and optionally a target
+  range, where the filtered or sorted output gets written to. Because of that
+  the stored range should be separated from Database and named TargetRange.
+
+  TargetRange will contain a data model, like SourceRange fka. Binding does,
+  but retrieves data from it instead of feeding data to it. Additionally,
+  both, SourceRange and TargetRange need a method delivering the current cell
+  region name, because the range can be moved due to column/row/cell range
+  insertions/removals.
+
+  External apps or shapes or internal objects should work with an abstract
+  interface, that provides the model and the cell region name, instead of
+  directly working with the data model. E.g. KChart needs the correct cell
+  region names in the dialogs even after the source ranges have moved.
+
+  Same should be true for the Database's target range, even though the
+  OpenDocument spec does not distinguish between absolute and relative
+  addresses. My interpretation is that this means the cell ranges are fixed.
+  (e.g. OpenDocument v1.1, 8.7.1 Table Filters, Table Range Address: "A differ-
+  entiation between absolute and relative addresses is not possible. Therefore,
+  a table name has to exist in the address and dollar signs are ignored.")
+  OpenOffice does allow their movement though; an autofilter moves there.
+  KSpread should go the most generic way: allow range movements and allow
+  to fix the ranges by dollar signs, even if these are ignored in the ODF in
+  this case.
+
+  External apps or shapes should be allowed to consume or to provide data.
+  Expose an interface to the SourceRangeManager, that takes a cell range name
+  and returns an cell range interface (model + cell range name) and allows to
+  remove such a tracked cell range again.
+  For data providers an interface to TargetRangeManager should be published.
+  This needs a method, that takes a cell range name and a model. The method
+  also returns an cell range interface (model + cell range name). A method to
+  remove the cell range has to be supported, too.
+
+  Summary:
+  1. Binding* becomes SourceRange*.
+  2. SourceRangeModel implements abstract interface (model + cell range name).
+  3. Create TargetRangeModel implementing same abstract interface as SourceRange.
+  4. Refactor Database, so that it refers to a TargetRangeModel.
+  5. DatabaseStorage becomes TargetRangeStorage.
+  6. Expose a SourceRange manager interface to allow externals to consume data.
+  7. Expose a TargetRange manager interface to allow externals to provide data.
+
+
+
+Things to do before the release of KOffice 2.0
+==============================================
+
+Item                                                               Prio Status
+------------------------------------------------------------------------------
+
+Regressions
+-----------
+* Autofill							      1 DONE
+  Fix it. Works, if you comment out the undo creation. Probably since
+  the KCommand to QUndoCommand.
+* Border (l,r,t,b & outline)					      1 DONE
+  Redo does not work.
+* Auto-Format							      1 DONE
+  Undo does not work.
+
+General bugs
+------------
+* Autofill							      3 ----
+  Fix the 'May'-may-be-a-short-or-long-month issue.
+
+Filter bugs
+-----------
+
+Things not in bugzilla
+----------------------
+
+* Printing
+  + printouts with zoom other than 100% (it's a missing feature, but  2 done
+    the GUI is there... - page layout, options, Scale Printout )
+  + make print range work over more than 1 page			      2 done
+  + Repeated rows and columns don't work if they don't start from     2 ----
+    row/column 1.   Also it is not possible to enter just one
+    row/column into the dialog, it always has to be a range (2:3).
+    - Make it possible to enter just one row/column into GUI, don't   2 done
+      force a range.
+  + Insert manual page break					      2 ----
+  + Print selection only					      2 done
+
+* OpenDocument file format
+  - see OASIS.txt						      1 ----
+  - Fix loading of named styles					      1 done
+  - Fix loading order of columns, rows and cells		      1 done
+
+* OpenFormula compliance (Medium group)
+  - implement all functions of the Small and Medium group	      1 ----
+    see koffice/kspread/functions/TODO
+  - implement the calculation settings				      1 ----
+    see section 8.5.2 in [1] and section 3.3 in [2]
+
+* Flake integration.
+  + Provide a table shape					      1 done
+  + General shape support					      1 done
+  + Cell anchoring						      1 ----
+    - Saving								----
+      Query the shape container of the sheet before iterating over
+      the cells. Store the shapes anchored in cells in a QHash. Put
+      that into a saving context and pass it to the cell saving
+      methods. Write out the shape at the appropriate place.
+    - Interaction							----
+      Shapes anchored cells should be moved, if the cell itself
+      got moved; either by column/row/cell range insertions/deletions
+      or by column/row dimension changes.
+  + Move all the managers and other necessary logic from Doc to Map	done
+    in order to use Map solely as data center for embedded tables.
+
+* Internals (See also DESIGN.html)
+  + Painting    						      1 DONE
+    Use a 'CellWindow' to store CellViews for the the currently
+    visible cells. This 'CellWindow' will create and delete CellViews
+    if necessary, but reuses existing ones. This approach will enable
+    us to decouple the CellViews from the Cells. This in turn will
+    enable us to cache each and every attribute related to the cell
+    painting, which is currently not possible because of memory
+    consumption. Caching the attributes should make the painting
+    way faster.
+
+  + Zooming							      1 DONE
+    Make it view dependent and not document dependent.
+
+  + Cell Storage						      1 ----
+    - Move all cell attributes to separate storages.			done
+    - Undo for LinkStorage (insert/remove columns/rows/cell ranges)	done
+    - Undo for FusionStorage (insert/remove columns/rows/cell ranges)	done
+    - Move all storages out of Sheet.					done
+      This CellStorage (SuperStorage) should provide methods to iterate
+      over the non-empty cells, i.e. those that have at least one
+      attribute. All getter and setter should be moved from Sheet to
+      this super storage.
+    - Merge new Cell Storage into trunk					done
+    - A common undo object.						done
+      Provide a startUndoRecord() and a stopUndoRecord() method.
+      On stopping the recording an undo data object containing all
+      necessary data for each storage is returned. Provide a method
+      that takes such an undo data object and performs the undo.
+      For each storage one has to store a list/vector. If empty, those
+      take just the size of a pointer.
+      The undo process will than be in one place and the undo data
+      object can be stored on the heap. By just passing its pointer
+      around the undo data object can be implemented as a private
+      class of the super storage.
+    - (Re-)Adjust the saving algos to use the new (old) iteration	----
+      functionality.
+    - Rewrite the MergeManipulator to work directly on the CellStorage.	----
+    - PointStorage: Implement setLoadingEnabled(bool) that switches	----
+      the insertion method to a mode in which the value, column and
+      row are just appended to the vectors.
+    - Point-/RectStorage: All yet stored data is implicitly shared.	----
+      Make use of this fact: Implement book-keeping with a hash and
+      reuse the already stored values. This is already done in
+      StyleStorage.
+
+  + Style Storage						      1 ----
+    This would dramatically reduce memory consumption and allows
+    styles for empty cells.
+    - Merge new Style Storage into trunk				done
+    - Remove old Format							done
+    - reuse existing sub-styles (book-keeping)				done
+      Done on a per substyle basis.
+      Lookup: O(n)
+      n: number of different aggregations of a substyle,
+         e.g. red, blue, etc. for the background color substyle
+    - Garbage collection						done
+      Every minute a list of pairs, consisting of a rect and a
+      substyle, is filled. Every now and then one pair is checked
+      wether it's obsolete.
+    - Keep track of the used area.					done
+      Styled cells do not necessarily occur in the cluster anymore.
+      Same goes for rows and columns.
+    - Speedup the OpenDocument loading by 'collecting' the used area	done
+      of each style and insert a minimal set of rectangles into the
+      style storage.
+    - Undo of style changes						done
+      This should insert the inverse substyles or something similar.
+    - Add insertion/deletion of columns/rows				done
+    - OpenDocument loading/saving					done
+    - Old native format loading/saving					done
+    - Replace Cell::format() by Cell::style().				done
+    - Move the StyleManipulator class into the FormatManipulators file	done
+      and rename the file to StyleManipulators.
+    - Fix the border outline operation.					done
+    - Port the filters.							done
+    - Decouple validity and conditions from cells.			done
+    - Fix named styles.							done
+    - Check for orphaned (nonDefault)Cell lookups.			done
+    - Extend the Storage template to the StyleStorage level.		done
+      - Garbage collection						done
+      - Book-keeping							done
+      - Used area tracking						done
+      - Cache								done
+    - Improve the caching of the styles.				done
+    - Insertion/deletion of cell ranges.				done
+    - Fix garbage collection.						done
+      Remove only data rectangles, that are completely covered.
+    - Seek & destroy R-Tree data rects, if they get empty after		done
+      deletion of columns/rows, but store them for undo.
+    - Port FormatDialog.						done
+    - Port IncreaseIndentManipulator.					done
+    - Port BorderColorManipulator.					done
+    - Undo for insertion/deletion of columns/rows.			done
+    - Undo for insertion/deletion of cell ranges.			done
+    - Improve the saving.						----
+      Only StyleStorage::Private::usedArea should track the occupied
+      cells only - not those of columns or rows. Adjust the saving algo
+      appropriately.
+    - Fix Style::isDefault(). Use the StyleManager's default style.	done
+    - Get rid of KSpread::Style::Currency. Use KSpread::Currency.	done
+    - Add configure option to choose wether the style of the current	----
+      or of the previous (default) column/row is used on insertion.
+    - Launch the garbage collection in a separate thread.		----
+    - Garbage collection triggering.					done
+      Currently, every minute the whole tree is filled in as possible
+      garbage and each piece is checked when time allows. To avoid the
+      check of the whole tree every minute (at worst), the changed
+      region's rectangle/data pairs are marked as possible garbage.
+    - Revisit Style::loadXML(), Style::saveXML(). Check copy&paste!	done
+
+  + Speed up selection.						      1 DONE
+    - Clipped selection painting.					done
+      Provide a SelectionDamage. On selection changes the changed cell
+      range is already calculated. Now, use this changed cell region,
+      convert it into view coordinates and set QPainter's clip region
+      appropriately.
+
+  + Non-continguous selection					      2 DONE
+    Convert the operations to work on non-contiguous selections.
+    - InsertColumn							done
+    - InsertRow								done
+    - DeleteColumn							done
+    - DeleteRow								done
+    - Insert cells							done
+    - Delete cells							done
+
+  + Commands							      2 ----
+    Convert UndoActions and related logic to Commands.
+    - Copy								done
+      Can't be undone -> not necessary
+    - Delete								done
+    - Cut								done
+      Consists of Copy and Delete -> undoing by undoing Delete
+    - Paste								----
+    - Paste Special							----
+    - Paste with insertion						----
+    - InsertColumn							done
+    - InsertRow								done
+    - DeleteColumn							done
+    - DeleteRow								done
+    - Insert cells							done
+    - Delete cells							done
+    - Autofill sequence							done
+
+  + Rich text in cells.						      1 ----
+    - Use KoText.    							----
+    - Background spell check (necessary to have rich text)		----
+
+  + Evaluation of how best to increase floating point precision.      3 ----
+	Suggestion:  GnuMP.    (Tomas)
+	This will work by converting all functions to compute using
+	ValueCalc, and nothing else, then modifying Value* to
+	support GnuMP.  The conversion step shall be done as a part
+	of converting to the new parser.
+
+  + Damage concept						      1 DONE
+    - Split the damage processing: document and view related.		done
+
+  + code cleanups						      3 ----
+    - Merge Cell::checkForNamedAreas() into Oasis::decodeFormula().	done
+      Caution: also used by OpenCalc filter
+    - Check if all logic of Point and Range is materialized in Region.	done
+      Replace all occurences of Point and Range by Region.
+    - All util_foo() functions that act on Point/Ranges should become	done
+      static members of Region.
+    - Move all util_foo() functions to 'Util' namespace and remove	done
+      the prefix 'util_'.
+    - Reduce amount of parameters for methods which takes many of	----
+      them, e.g. Sheet::paste(). bools -> QFlags, static variables
+    - Revisit Conditions class.						done
+      Make it an implicitly shared class - like Style.
+    - Revisit Validity class.						done
+      Make it an implicitly shared class - like Style.
+    - Move Cell::testValidity() into Validity class.			done
+
+* GUI
+  + Indent and multiline doesn't work together			      2 ----
+  + RegionSelector						      2 ----
+    - add syntax highlighting
+    - intialize choice on focus in events, if necessary
+    - fix the line edit height
+    - implement single cell restriction (maybe in Selection)
+    - jump back to parent dialog on closing the mini dialog
+  + Scrollbar that supports jumping one row/column forward or back    2 ----
+
+* Formula/Value engine
+  + DependencyManager / RecalcManager				      1 DONE
+    - The reference depth changes only if a formula was altered. So,	done
+      it belongs to the DependencyManager and has to be moved. OTOH,
+      it is only use for recalculation. If this is disabled, the
+      reference depth is useless. Therefore, we have to respect the
+      automatic recalc setting.
+    - Move Cell::calc() to RecalcManager.				done
+    - Emit an appropriate Damage after cell/col/row insertion/deletion.	done
+
+  + Named areas							      1 DONE
+    - Update on cell/col/row insertion/deletion.			done
+      Maybe refactor the code to have a separate manager for the named
+      areas and store them in a RectStorage; similar to Binding storage.
+
+  + Value							      1 DONE
+    - Support datetimes (again)						done
+    - Distinct complex type						done
+
+  + Matrix operations						      2 ----
+    - Determinant							done
+    - Dimension								----
+    - Inverse								done
+    - Minima/Maxima elements						----
+    - Multiply								done
+    - Norm								----
+    - Rank								----
+    - Transpose								done
+
+  + Locked areas (for formulas with a matrix as result)		      2 DONE
+    - Move the unlocking/checking from CellStorage to the preprocessing done
+      of the Commands. Copy/paste operations need a special handling
+      unless they are converted to Commands.
+
+  + References to cells in other files				      2 ----
+
+  + Tools->Auditing:						      2 ----
+    - Trace Precedents						        ----
+    - Trace Dependants						        ----
+    - Trace Error						        ----
+    - Remove all arrows						        ----
+
+
+* General features
+  + Split view							      1 ----
+  + "Freeze/Unfreeze Panes"					      2 ----
+  + Function optimizer ('Solver')				      2 ----
+    - evaluate, if we're able to use linear methods (derivatives!)	----
+    - evaluate, how to include side conditions				----
+    - check wether the formula cell carries a valid formulas		----
+      and further checks of used cell contents
+
+
+* Major features (big effort)
+  + Pivot tables						      3 ----
+  + Scenarios							      3 ----
+    See [1], section 8.3.3 for details.
+
+
+Other things: (please add the things you are working on!)
+
+
+Not yet sorted (will be entered into categories above)
+
+- Multiple Operations (in Excel: "Data"->"Table")
+- Insert widgets like buttons, drop down lists,... + having the possibily to
+  define action if pressed, or selection changes,...
+- Button + Drop-Down-List support (within cells)
+- interface for mail merge
+- Printing enhancements:
+  + Expand selection to page
+  + Fit selection to page
+- new dialog for conditional cell attributes
+- multiline header/footer support
+- for formulas: fit precision so the result fits in the cell or resize the cell
+
+- changing text angle should resize the cell height automatically
+- support for format strings (dd/mm/yyyy)
+- more font attributes (outline, shadow,...) + attributes for parts of the text
+- double borders
+- better AutoFormat dialog + better templates
+
+- more "Related Functions" in function help/desc text
+- improve function compatibility with MS Excel
+- more information functions (Excel compatible)
+
+- enhance the Gnumeric import filter
+- sync the Gnumeric export filter
+- StarCalc/OpenCalc import filter
+- StarCalc/OpenCalc filter for embedding/embedded objects
+- StarCalc/OpenCalc export filter
+- dBASE export filter
+
+
+
+
+******************************************************************************
+Please everyone working on KSpread:
+
+Get yourself a copy of Excel 97 or 2000 and create
+a really big sheet, and I mean really big and insert Graphs and
+lots of dependencies and regressions etc. use external add-ins if you have any
+and real time links. Make links between sheets and then see how
+well Excel behaves.
+
+1. UNDERSTAND that putting a spread->recalc() or spread->recalc(true) in
+your code is an abosolute NO-NO! Complex spreadsheets with possible
+heavy mathematical calculations via dll/so add-ins as well as real
+time feeds will not be managable if you do not painstakingly check
+wether spread->getAutoCalc() is true.
+
+
+2. Learn to understand that without the
+following short cut actions you are lost ( try to scroll
+down a list of 10,000 obersvations ...not using CTRL Down
+for example)
+
+CTRL Up/Down/Left/Right
+CTRL Shift Up/Down/Left/Right
+CTRL Home/End
+CTRL Shift Home/End
+Shift F9 versus F9
+
+Let's try to get them working well in Kspread as well. I tried my
+hand at it but wasn't able to get them to be efficient.
+
+3. Familiarize yourself with the concept of array formulas and why they
+are necessary (area protection, partial argument evaluation) Who would
+be willing to implement them? This will be an absolute must if we
+want to make progress on the mathematical/financial/statistical
+function side of things. I would be willing to implement a miriad
+of these functions but I believe doing that without having array
+formulae first will be a big mistake.
+
+(In case you wonder why I feel so strongly about these things:
+I am a professional user of Excel. I eat, sleap and work with Excel
+on my trading desk on Wall-Street.)
+
+
+Bernd <wuebben@kde.org>
+
+
+
+References:
+===========
+[1]	Open Document Format for Office Applications (OpenDocument) v1.0,
+	http://docs.oasis-open.org/office/v1.0
+[2]	Open Document Format for Office Applications (OpenDocument),
+	Recalculated Formula (OpenFormula)
+	http://www.oasis-open.org/committees/office

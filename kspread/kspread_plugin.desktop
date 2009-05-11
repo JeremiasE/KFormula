@@ -1,0 +1,30 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=KSpread/Plugin
+Comment=Plugin for KSpread
+Comment[ca]=Connector per al KSpread
+Comment[da]=Plugin til KSpread
+Comment[de]=Modul für KSpread
+Comment[el]=Πρόσθετο για το KSpread
+Comment[es]=Complemento para KSpread
+Comment[et]=KSpreadi plugin
+Comment[ga]=Breiseán KSpread
+Comment[gl]=Extensión par KSpread
+Comment[he]=תוסף של KSpread
+Comment[hne]=केस्प्रेड बर प्लगइन
+Comment[it]=Estensione per KSpread
+Comment[ja]=KSpread のプラグイン
+Comment[kk]=KSpread-ке арналған плагин
+Comment[lv]=KSpread spraudnis
+Comment[nds]=Moduul för KSpred
+Comment[nl]=Plugin voor KSpread
+Comment[pt]='Plugin' para o KSpread
+Comment[pt_BR]=Plug-in para o KSpread
+Comment[sv]=Insticksprogram för Kspread
+Comment[tr]=KSpread için Eklenti
+Comment[uk]=Втулок для KSpread
+Comment[x-test]=xxPlugin for KSpreadxx
+Comment[zh_CN]=KSpread 插件
+Comment[zh_TW]=KSpread 外掛程式
+[PropertyDef::X-KSpread-Version]
+Type=int

@@ -1,0 +1,12 @@
+include_directories(${CMAKE_SOURCE_DIR}/filters/kword/libexport ${KOMAIN_INCLUDES} ${KOGUIUTILS_INCLUDES} ${KOTEXT_INCLUDES})
+
+MESSAGE(STATUS "reactivate svg genericimageexport when kpresenter will port")
+#add_subdirectory( svg )
+#add_subdirectory( genericimageexport )
+#add_subdirectory( kword )
+#add_subdirectory( ooimpress )
+add_subdirectory( powerpoint )
+#add_subdirectory( magicpoint )
+#add_subdirectory(kpr)
+add_subdirectory( kpr2odf )
+#add_subdirectory( ooppt )

@@ -1,0 +1,27 @@
+[Desktop Entry]
+Name=Spacenavigator Device
+Name[ca]=Aparell NavegadorEspacial
+Name[da]=Enhed til rumnavigering
+Name[de]=Spacenavigator-Gerät
+Name[el]=Συσκευή Spacenavigator
+Name[es]=Dispositivo de Spacenavigator
+Name[et]=Spacenavigatori seade
+Name[gl]=Dispositivo Spacenavigator
+Name[it]=Dispositivo per la navigazione spaziale
+Name[kk]=Кеңістікте бағдарлау құралы
+Name[lv]=Spacenavigator ierīce
+Name[nds]=Spacenavigator-Reedschap
+Name[nl]=Spacenavigator-apparaat
+Name[pt]=Dispositivo do Spacenavigator
+Name[pt_BR]=Dispositivo do Spacenavigator
+Name[sv]=Rymdnavigeringsenhet
+Name[ta]=இடம் தேடும் கருவி
+Name[tr]=Boşluk Gözleme Aygıtı
+Name[uk]=Пристрій просторового орієнтування
+Name[x-test]=xxSpacenavigator Devicexx
+Name[zh_TW]=Spacenavigator 裝置
+X-KDE-ServiceTypes=KOffice/Device
+Type=Service
+X-KDE-Library=spacenavigator
+X-Flake-MinVersion=0
+X-Flake-PluginVersion=1

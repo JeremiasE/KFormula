@@ -1,0 +1,25 @@
+[Desktop Entry]
+Name=Page Application Background Tool
+Name[ca]=Eina d'aplicació de fons de pàgina
+Name[da]=Værktøj til side-program-baggrund
+Name[de]=Hintergrundwerkzeug für Seitenanwendungen
+Name[el]=Εργαλείο φόντου εφαρμογής σελίδας
+Name[es]=Herramienta de fondo de las aplicaciones de la página
+Name[et]=Leheküljepõhiste rakenduste tausta tööriist
+Name[gl]=Ferramenta do Fondo de Páxina da Aplicación
+Name[it]=Strumento per l'applicazione di sfondi sulle pagine
+Name[kk]=Қолданба бетінің аясымен айналысу
+Name[nds]=Siedenprogramm-Achtergrundwarktüüch
+Name[nl]=Hulpmiddel voor de achtergrond van een pagina-applicatie
+Name[pt]=Ferramenta de Fundo das Aplicações da Página
+Name[pt_BR]=Ferramenta de fundo dos aplicativos da página
+Name[sv]=Bakgrundsverktyg för sidanvändning
+Name[tr]=Sayfa Uygulama Arkaplan Aracı
+Name[uk]=Програма для роботи з тлом сторінки
+Name[x-test]=xxPage Application Background Toolxx
+Name[zh_TW]=頁面應用程式背景工具
+X-KDE-ServiceTypes=KOffice/Tool
+Type=Service
+X-KDE-Library=kopabackgroundtool
+X-Flake-MinVersion=0
+X-Flake-PluginVersion=1

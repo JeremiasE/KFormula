@@ -1,0 +1,346 @@
+<ui version="4.0" >
+ <class>WdgColorSettings</class>
+ <widget class="QWidget" name="WdgColorSettings" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>586</width>
+    <height>457</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Color Settings</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <property name="margin" >
+    <number>11</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="textLabel1_2" >
+       <property name="text" >
+        <string>Default color model for new images:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KisCmbIDList" native="1" name="cmbWorkingColorSpace" >
+       <property name="sizePolicy" >
+        <sizepolicy>
+         <hsizetype>7</hsizetype>
+         <vsizetype>5</vsizetype>
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize" >
+        <size>
+         <width>0</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="grpDisplay" >
+     <property name="title" >
+      <string>Display</string>
+     </property>
+     <layout class="QVBoxLayout" >
+      <property name="margin" >
+       <number>11</number>
+      </property>
+      <property name="spacing" >
+       <number>6</number>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" >
+        <property name="margin" >
+         <number>0</number>
+        </property>
+        <property name="spacing" >
+         <number>6</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="lblMonitorProfile" >
+          <property name="toolTip" >
+           <string>The icm profile for your calibrated monitor</string>
+          </property>
+          <property name="text" >
+           <string>&amp;Monitor profile:</string>
+          </property>
+          <property name="buddy" >
+           <cstring>cmbMonitorProfile</cstring>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="SqueezedComboBox" native="1" name="cmbMonitorProfile" >
+          <property name="sizePolicy" >
+           <sizepolicy>
+            <hsizetype>7</hsizetype>
+            <vsizetype>0</vsizetype>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" >
+        <property name="margin" >
+         <number>0</number>
+        </property>
+        <property name="spacing" >
+         <number>6</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="textLabel1_4" >
+          <property name="toolTip" >
+           <string>The icm profile for your calibrated monitor</string>
+          </property>
+          <property name="text" >
+           <string>&amp;Rendering intent:</string>
+          </property>
+          <property name="buddy" >
+           <cstring>cmbMonitorProfile</cstring>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="KComboBox" name="cmbMonitorIntent" >
+          <property name="sizePolicy" >
+           <sizepolicy>
+            <hsizetype>7</hsizetype>
+            <vsizetype>0</vsizetype>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <item>
+           <property name="text" >
+            <string>Perceptual</string>
+           </property>
+          </item>
+          <item>
+           <property name="text" >
+            <string>Relative Colorimetric</string>
+           </property>
+          </item>
+          <item>
+           <property name="text" >
+            <string>Saturation</string>
+           </property>
+          </item>
+          <item>
+           <property name="text" >
+            <string>Absolute Colorimetric</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox2" >
+     <property name="enabled" >
+      <bool>true</bool>
+     </property>
+     <property name="title" >
+      <string>Printing</string>
+     </property>
+     <layout class="QVBoxLayout" >
+      <property name="margin" >
+       <number>11</number>
+      </property>
+      <property name="spacing" >
+       <number>6</number>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" >
+        <property name="margin" >
+         <number>0</number>
+        </property>
+        <property name="spacing" >
+         <number>6</number>
+        </property>
+        <item>
+         <layout class="QVBoxLayout" >
+          <property name="margin" >
+           <number>0</number>
+          </property>
+          <property name="spacing" >
+           <number>6</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="lbldefaultprinterspace" >
+            <property name="text" >
+             <string>Default printer color model:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="textLabel4" >
+            <property name="toolTip" >
+             <string>The icm profile for your calibrated printer</string>
+            </property>
+            <property name="text" >
+             <string>Default &amp;printer profile:</string>
+            </property>
+            <property name="buddy" >
+             <cstring>cmbPrintProfile</cstring>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" >
+          <property name="margin" >
+           <number>0</number>
+          </property>
+          <property name="spacing" >
+           <number>6</number>
+          </property>
+          <item>
+           <widget class="KisCmbIDList" native="1" name="cmbPrintingColorSpace" >
+            <property name="sizePolicy" >
+             <sizepolicy>
+              <hsizetype>7</hsizetype>
+              <vsizetype>5</vsizetype>
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="SqueezedComboBox" native="1" name="cmbPrintProfile" />
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="grpPasteBehaviour" >
+     <property name="title" >
+      <string>When Pasting Into Krita From Other Applications</string>
+     </property>
+     <layout class="QVBoxLayout" >
+      <property name="margin" >
+       <number>11</number>
+      </property>
+      <property name="spacing" >
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QRadioButton" name="radioPasteWeb" >
+        <property name="text" >
+         <string>Assume sRGB (like images from the web are supposed to be seen)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioPasteMonitor" >
+        <property name="text" >
+         <string>Assume monitor profile (like you see it in the other application)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioPasteAsk" >
+        <property name="text" >
+         <string>Ask each time</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="textLabel1_2_2" >
+        <property name="text" >
+         <string>Note: When copying/pasting inside Krita color info is always preserved.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item>
+      <widget class="QCheckBox" name="chkBlackpoint" >
+       <property name="text" >
+        <string>Use Blackpoint compensation</string>
+       </property>
+       <property name="checked" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer>
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType" >
+      <enum>QSizePolicy::Expanding</enum>
+     </property>
+     <property name="sizeHint" >
+      <size>
+       <width>20</width>
+       <height>16</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <customwidgets>
+  <customwidget>
+   <class>KisCmbIDList</class>
+   <extends>QWidget</extends>
+   <header>widgets/kis_cmb_idlist.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SqueezedComboBox</class>
+   <extends>QWidget</extends>
+   <header>widgets/squeezedcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KComboBox</class>
+   <extends>QComboBox</extends>
+   <header>kcombobox.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

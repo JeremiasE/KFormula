@@ -1,0 +1,16 @@
+include_directories(libbrush libpaintop)
+
+add_subdirectory( libbrush )
+add_subdirectory( libpaintop )
+add_subdirectory( defaultpaintops )
+add_subdirectory( sumie )
+add_subdirectory( chalk )
+add_subdirectory( filterop )
+add_subdirectory( complexop )
+add_subdirectory( dynamicbrush )
+#add_subdirectory( cpaint )
+add_subdirectory( dynadraw )
+add_subdirectory( deform )
+add_subdirectory( curvebrush )
+add_subdirectory( spray )
+
