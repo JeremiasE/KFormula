@@ -92,6 +92,12 @@ public:
 
     /// @return The element's ElementType
     ElementType elementType() const;
+    
+    ///inherited from BasicElement
+    virtual int length() const;
+    
+    ///inherited from BasicElement
+    virtual int positionOfChild(BasicElement* child) const;
 
 protected:
     /// Read contents of the token element. Content should be unicode text strings or mglyphs
