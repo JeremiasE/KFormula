@@ -56,10 +56,10 @@ void BasicElement::paint( QPainter& painter, AttributeManager* )
 void BasicElement::layout( const AttributeManager* )
 { /* do nothing */ }
 
-BasicElement* BasicElement::acceptCursor( const FormulaCursor* cursor )
+bool BasicElement::acceptCursor( const FormulaCursor* cursor )
 {
     Q_UNUSED( cursor )
-    return this;
+    return true;
 }
 
 bool BasicElement::moveCursor(FormulaCursor* cursor) 
@@ -101,14 +101,9 @@ const QRectF BasicElement::absoluteBoundingRect() const
 
 bool BasicElement::setCursorTo(FormulaCursor* cursor, QPointF point)
 {
-    if (boundingRect().contains(point)) {
-	cursor->setPosition(0);
-	cursor->setCurrentElement(this);
-	return true;
-    }
-    else {
-	return false;
-    }
+    cursor->setPosition(0);
+    cursor->setCurrentElement(this);
+    return true;
 }
 
 

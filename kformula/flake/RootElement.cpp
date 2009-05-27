@@ -105,9 +105,9 @@ void RootElement::removeChild( FormulaCursor* cursor, BasicElement* child )
 {
 }
 
-BasicElement* RootElement::acceptCursor( const FormulaCursor* cursor )
+bool RootElement::acceptCursor( const FormulaCursor* cursor )
 {
-    return 0;
+    return true;
 }
 
 ElementType RootElement::elementType() const
