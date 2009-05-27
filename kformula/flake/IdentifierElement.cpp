@@ -37,8 +37,8 @@ void IdentifierElement::renderToPath( const QString& raw, QPainterPath& path )
         path.addText( path.currentPosition(), manager.font( this ), mappedEntity ); 
     }
     else
-	//What is this?
-        path.addText( path.currentPosition(), manager.font( this ), raw );
+	   path.addText( QPointF(path.boundingRect().right(),0.0), font(), raw );
+//         path.addText( path.currentPosition(), manager.font( this ), raw );
 }
 
 ElementType IdentifierElement::elementType() const

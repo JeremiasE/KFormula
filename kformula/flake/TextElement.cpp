@@ -27,7 +27,7 @@ TextElement::TextElement( BasicElement* parent ) : TokenElement( parent )
 
 void TextElement::renderToPath( const QString& raw, QPainterPath& path )
 {
-    path.addText( path.currentPosition(), font(), raw );
+    path.addText( QPointF(path.boundingRect().right(),0.0), font(), raw );
 }
 
 ElementType TextElement::elementType() const

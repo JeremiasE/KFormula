@@ -35,10 +35,10 @@ void OperatorElement::renderToPath( const QString& raw, QPainterPath& path )
     dict.queryOperator( raw, determineOperatorForm() );
     
     AttributeManager manager;
-    path.addText( path.currentPosition(), manager.font( this ), raw );
-
-//    path.moveTo( path.currentPosition() + QPointF( lspace, 0.0 ) );
-//    path.moveTo( path.currentPosition() + QPointF( rspace, 0.0 ) );
+    path.addText( QPointF(path.boundingRect().right(),0.0), manager.font( this ), raw );
+   
+    path.moveTo( path.currentPosition() + QPointF( lspace, 0.0 ) );
+    path.moveTo( path.currentPosition() + QPointF( rspace, 0.0 ) );
 }
 
 Form OperatorElement::determineOperatorForm() const
