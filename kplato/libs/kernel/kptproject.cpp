@@ -28,6 +28,7 @@
 #include "kptschedule.h"
 #include "kptwbsdefinition.h"
 #include "kptxmlloaderobject.h"
+#include "kptschedulerplugin.h"
 
 #include <KoXmlReader.h>
 
@@ -51,7 +52,8 @@ Project::Project( Node *parent )
         : Node( parent ),
         m_accounts( *this ),
         m_defaultCalendar( 0 ),
-        m_taskDefaults( new Task() )
+        m_taskDefaults( new Task() ),
+        m_schedulerPlugins()
 {
     //kDebug()<<"("<<this<<")";
     m_constraint = Node::MustStartOn;
@@ -191,13 +193,12 @@ void Project::calculate( ScheduleManager &sm )
         incProgress();
         sm.setCalculateAll( false );
         sm.createSchedules();
-        sm.setRecalculateFrom( KDateTime::currentLocalDateTime() );
         if ( sm.parentManager() ) {
             sm.expected()->startTime = sm.parentManager()->expected()->startTime;
             sm.expected()->earlyStart = sm.parentManager()->expected()->earlyStart;
         }
         incProgress();
-        calculate( sm.expected(), KDateTime::currentLocalDateTime() );
+        calculate( sm.expected(), sm.recalculateFrom() );
     } else {
         if ( sm.optimistic() ) {
             maxprogress += nodes * 3;
@@ -1005,7 +1006,8 @@ void Project::addResource( ResourceGroup *group, Resource *resource, int index )
 Resource *Project::takeResource( ResourceGroup *group, Resource *resource )
 {
     emit resourceToBeRemoved( resource );
-    Q_ASSERT( removeResourceId( resource->id() ) == true );
+    bool result = removeResourceId( resource->id() );
+    Q_ASSERT( result == true );
     resource->removeRequests(); // not valid anymore
     Resource *r = group->takeResource( resource );
     Q_ASSERT( resource == r );
@@ -2290,6 +2292,12 @@ void Project::setTaskDefaults( const Task &task )
 {
     delete m_taskDefaults;
     m_taskDefaults = new Task( task );
+}
+
+void Project::setSchedulerPlugins( const QMap<QString, SchedulerPlugin*> &plugins )
+{
+    m_schedulerPlugins = plugins;
+    kDebug()<<m_schedulerPlugins;
 }
 
 #ifndef NDEBUG

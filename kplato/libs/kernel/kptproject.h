@@ -51,6 +51,7 @@ class StandardWorktime;
 class ScheduleManager;
 class XMLLoaderObject;
 class Task;
+class SchedulerPlugin;
 
 /**
  * Project is the main node in a project, it contains child nodes and
@@ -478,6 +479,12 @@ public:
     
     void incProgress();
 
+    void setSchedulerPlugins( const QMap<QString, SchedulerPlugin*> &plugins );
+    const QMap<QString, SchedulerPlugin*> &schedulerPlugins() const { return m_schedulerPlugins; }
+
+    void initiateCalculation( MainSchedule &sch );
+    void initiateCalculationLists( MainSchedule &sch );
+
 signals:
     /// Emitted when anything in the project is changed (use with care)
     void changed();
@@ -591,9 +598,6 @@ protected:
     DateTime checkStartConstraints( const DateTime &dt ) const;
     DateTime checkEndConstraints( const DateTime &dt ) const;
 
-    void initiateCalculation( MainSchedule &sch );
-    void initiateCalculationLists( MainSchedule &sch );
-
     bool legalParents( const Node *par, const Node *child ) const;
     bool legalChildren( const Node *par, const Node *child ) const;
 
@@ -615,6 +619,8 @@ private:
 
     Task *m_taskDefaults;
     int m_progress;
+
+    QMap<QString, SchedulerPlugin*> m_schedulerPlugins;
 
 #ifndef NDEBUG
 public:

@@ -141,6 +141,7 @@ install( FILES
     KoMainWindow.h 
     KoApplication.h 
     KoApplicationAdaptor.h 
+    KoEmbeddedDocumentSaver.h
     KoQueryTrader.h 
     KoFilterManager.h 
     KoDocumentInfo.h 
@@ -165,6 +166,7 @@ install( FILES
     threadAction/KoExecutePolicy.h
     threadAction/KoAction.h
     KoDockFactory.h
+    KoDockRegistry.h
     KoViewChild.h
     komain_export.h
     KoViewConverter.h

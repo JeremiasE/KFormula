@@ -44,6 +44,7 @@
 #include "recorder/kis_action_recorder.h"
 #include "kis_adjustment_layer.h"
 #include "kis_annotation.h"
+#include "kis_background.h"
 #include "kis_change_profile_visitor.h"
 #include "kis_colorspace_convert_visitor.h"
 #include "kis_count_visitor.h"
@@ -71,7 +72,7 @@
 class KisImage::KisImagePrivate
 {
 public:
-    KoColor backgroundColor;
+    KisBackgroundSP  backgroundPattern;
     quint32 lockCount;
     bool sizeChangedWhileLocked;
     KisPerspectiveGrid* perspectiveGrid;
@@ -257,17 +258,18 @@ void KisImage::setDeleselectedGlobalSelection(KisSelectionSP selection)
     m_d->deselectedGlobalSelection = selection;
 }
 
-
-KoColor KisImage::backgroundColor() const
+KisBackgroundSP KisImage::backgroundPattern() const
 {
-    return m_d->backgroundColor;
+    return m_d->backgroundPattern;
 }
 
-void KisImage::setBackgroundColor(const KoColor & color)
+void KisImage::setBackgroundPattern(KisBackgroundSP background)
 {
-    m_d->backgroundColor = color;
+    if (background != m_d->backgroundPattern) {
+        m_d->backgroundPattern = background;
+        emit sigImageUpdated(bounds());
+    }
 }
-
 
 QString KisImage::nextLayerName() const
 {
@@ -290,7 +292,6 @@ void KisImage::init(KisUndoAdapter *adapter, qint32 width, qint32 height, const 
         colorSpace = KoColorSpaceRegistry::instance()->rgb8();
     }
 
-    m_d->backgroundColor = KoColor(Qt::white, colorSpace);
     m_d->lockCount = 0;
     m_d->sizeChangedWhileLocked = false;
     m_d->perspectiveGrid = 0;
@@ -402,6 +403,31 @@ void KisImage::resize(qint32 w, qint32 h, qint32 x, qint32 y, bool cropLayers)
     }
 }
 
+void KisImage::resizeWithOffset(qint32 w, qint32 h, qint32 xOffset, qint32 yOffset)
+{
+    if (w == width() && h == height() && xOffset == 0 && yOffset == 0)
+      return;
+
+    lock();
+    if (undo()) {
+        m_d->adapter->beginMacro(i18n("Size Canvas"));
+        m_d->adapter->addCommand(new KisImageLockCommand(KisImageSP(this), true));
+        m_d->adapter->addCommand(new KisImageResizeCommand(KisImageSP(this), w, h, width(), height()));
+    }
+
+    KisCropVisitor v(QRect(-xOffset, -yOffset, w, h), m_d->adapter);
+    m_d->rootLayer->accept(v);
+
+    emitSizeChanged();
+
+    unlock();
+
+    if (undo()) {
+        m_d->adapter->addCommand(new KisImageLockCommand(KisImageSP(this), false));
+        m_d->adapter->endMacro();
+    }
+
+}
 
 void KisImage::emitSizeChanged()
 {
@@ -718,7 +744,8 @@ void KisImage::flatten()
     QRect rc = mergedImage()->extent();
 
     KisPainter gc(dst->paintDevice());
-    gc.bitBlt(rc.x(), rc.y(), COMPOSITE_COPY, mergedImage(), OPACITY_OPAQUE, rc.left(), rc.top(), rc.width(), rc.height());
+    gc.setCompositeOp(COMPOSITE_COPY);
+    gc.bitBlt(rc.x(), rc.y(), mergedImage(), rc.left(), rc.top(), rc.width(), rc.height());
 
     setRootLayer(new KisGroupLayer(this, "root", OPACITY_OPAQUE));
 
@@ -826,8 +853,10 @@ QImage KisImage::convertToQImage(qint32 x,
     if (!dev) return QImage();
     QImage img = dev->convertToQImage(const_cast<KoColorProfile*>(profile), x, y, w, h);
 
+    if (m_d->backgroundPattern) {
+        m_d->backgroundPattern->paintBackground(img, QRect(x, y, w, h));
+    }
     if (!img.isNull()) {
-
 #ifdef WORDS_BIGENDIAN
         uchar * data = img.bits();
         for (int i = 0; i < w * h; ++i) {
@@ -850,82 +879,6 @@ QImage KisImage::convertToQImage(qint32 x,
     return QImage();
 }
 
-
-QImage KisImage::convertToQImage(const QRect& r, const double xScale, const double yScale, const KoColorProfile *profile, KisSelectionSP mask)
-{
-    Q_UNUSED(mask);
-
-    qDebug() << "KisImage::convertToQimage " << r << ", x scale " << xScale << ", y scale " << yScale;
-
-#ifdef __GNUC__
-#warning "KisImage::convertToQImage: Implement direct rendering of current mask onto scaled image pixels"
-#endif
-
-    if (r.isEmpty()) {
-        return QImage();
-    }
-
-    quint32 pixelSize = colorSpace()->pixelSize();
-
-    QRect srcRect;
-
-    srcRect.setLeft(static_cast<int>(r.left() * xScale));
-    srcRect.setRight(static_cast<int>(ceil((r.right() + 1) * xScale)) - 1);
-    srcRect.setTop(static_cast<int>(r.top() * yScale));
-    srcRect.setBottom(static_cast<int>(ceil((r.bottom() + 1) * yScale)) - 1);
-
-    KisPaintDeviceSP mergedImage = m_d->rootLayer->projection();
-
-    quint8 *scaledImageData = new quint8[r.width() * r.height() * pixelSize];
-
-    quint8 *imageRow = new quint8[srcRect.width() * pixelSize];
-    const qint32 imageRowX = srcRect.x();
-
-    for (qint32 y = 0; y < r.height(); ++y) {
-
-        qint32 dstY = r.y() + y;
-        qint32 dstX = r.x();
-        qint32 srcY = int(dstY * yScale);
-
-        mergedImage->readBytes(imageRow, imageRowX, srcY, srcRect.width(), 1);
-
-        quint8 *dstPixel = scaledImageData + (y * r.width() * pixelSize);
-        quint32 columnsRemaining = r.width();
-
-        while (columnsRemaining > 0) {
-
-            qint32 srcX = int(dstX * xScale);
-
-            memcpy(dstPixel, imageRow + ((srcX - imageRowX) * pixelSize), pixelSize);
-
-            ++dstX;
-            dstPixel += pixelSize;
-            --columnsRemaining;
-        }
-    }
-
-    delete [] imageRow;
-
-    QImage image = colorSpace()->convertToQImage(scaledImageData, r.width(), r.height(), const_cast<KoColorProfile*>(profile), KoColorConversionTransformation::IntentPerceptual);
-    delete [] scaledImageData;
-
-#ifdef WORDS_BIGENDIAN
-    uchar * data = image.bits();
-    for (int i = 0; i < image.width() * image.height(); ++i) {
-        uchar r, g, b, a;
-        a = data[0];
-        b = data[1];
-        g = data[2];
-        r = data[3];
-        data[0] = r;
-        data[1] = g;
-        data[2] = b;
-        data[3] = a;
-        data += 4;
-    }
-#endif
-    return image;
-}
 
 
 QImage KisImage::convertToQImage(const QRect& r, const QSize& scaledImageSize, const KoColorProfile *profile)
@@ -985,6 +938,10 @@ QImage KisImage::convertToQImage(const QRect& r, const QSize& scaledImageSize, c
     delete [] imageRow;
 
     QImage image = colorSpace()->convertToQImage(scaledImageData, r.width(), r.height(), const_cast<KoColorProfile*>(profile), KoColorConversionTransformation::IntentPerceptual);
+
+    if (m_d->backgroundPattern) {
+        m_d->backgroundPattern->paintBackground(image, r, scaledImageSize, QSize(imageWidth, imageHeight));
+    }
 
     delete [] scaledImageData;
 

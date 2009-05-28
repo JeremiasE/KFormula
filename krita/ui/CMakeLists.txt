@@ -44,12 +44,12 @@ set(kritaui_LIB_SRCS
     kis_bookmarked_configurations_model.cc
     kis_bookmarked_filter_configurations_model.cc
     kis_canvas_resource_provider.cpp 
+    kis_categorized_item_delegate.cpp
     kis_clipboard.cc 
     kis_config.cc
     kis_config_notifier.cpp 
     kis_control_frame.cpp
     kis_composite_ops_model.cc
-    kis_composite_ops_categorized_model.cc
     kis_cursor.cc
     kis_custom_palette.cc 
     kis_custom_pattern.cc
@@ -184,7 +184,7 @@ kde4_add_ui_files(kritaui_LIB_SRCS
 
 kde4_add_library(kritaui SHARED ${kritaui_LIB_SRCS} )
 
-target_link_libraries(kritaui ${KDE4_KDE3SUPPORT_LIBS} ${BLITZ_LIBRARIES} ${KDE4_KPARTS_LIBS} kritaimage kotext ${PNG_LIBRARIES} ${EXIV2_LIBRARIES})
+target_link_libraries(kritaui ${KDE4_KDE3SUPPORT_LIBS} ${BLITZ_LIBRARIES} ${KDE4_KPARTS_LIBS} ${KDE4_THREADWEAVER_LIBRARIES} kritaimage kotext ${PNG_LIBRARIES} ${EXIV2_LIBRARIES})
 
 if(HAVE_OPENGL)
     target_link_libraries(kritaui ${OPENGL_LIBRARIES} ${QT_QTOPENGL_LIBRARY} ${OPENEXR_LIBRARIES})

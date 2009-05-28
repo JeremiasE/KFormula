@@ -24,10 +24,10 @@
 #include "kptduration.h"
 #include "kptproject.h"
 #include "kptnode.h"
+#include "kpttaskcompletedelegate.h"
 
 #include <QAbstractItemModel>
 #include <QMimeData>
-#include <QItemDelegate>
 #include <QModelIndex>
 #include <QWidget>
 
@@ -1983,6 +1983,12 @@ Qt::ItemFlags NodeItemModel::flags( const QModelIndex &index ) const
                             flags |= Qt::ItemIsEditable;
                         }
                         break;
+                    case NodeModel::NodeCompleted:
+                        if ( t->state() & Node::State_ReadyToStart ) {
+                            flags |= Qt::ItemIsEditable;
+                        }
+                        break;
+
                     default: break;
                 }
             } else if ( ! t->completion().isFinished() ) {
@@ -2437,12 +2443,25 @@ bool NodeItemModel::setShutdownCost( Node *node, const QVariant &value, int role
 
 bool NodeItemModel::setCompletion( Node *node, const QVariant &value, int role )
 {
-    if ( role == Qt::EditRole && node->type() == Node::Type_Task ) {
+    kDebug()<<node->name()<<value<<role;
+    if ( role != Qt::EditRole ) {
+        return false;
+    }
+    if ( node->type() == Node::Type_Task ) {
         Completion &c = static_cast<Task*>( node )->completion();
-        QDate date = QDate::currentDate();
+        QDateTime dt = QDateTime::currentDateTime();
+        QDate date = dt.date();
         // xgettext: no-c-format
         MacroCommand *m = new MacroCommand( i18n( "Modify % Completed" ) );
+        if ( ! c.isStarted() ) {
+            m->addCommand( new ModifyCompletionStartedCmd( c, true ) );
+            m->addCommand( new ModifyCompletionStartTimeCmd( c, dt ) );
+        }
         m->addCommand( new ModifyCompletionPercentFinishedCmd( c, date, value.toInt() ) );
+        if ( value.toInt() == 100 ) {
+            m->addCommand( new ModifyCompletionFinishedCmd( c, true ) );
+            m->addCommand( new ModifyCompletionFinishTimeCmd( c, dt ) );
+        }
         emit executeCommand( m ); // also adds a new entry if necessary
         if ( c.entrymode() == Completion::EnterCompleted ) {
             Duration planned = static_cast<Task*>( node )->plannedEffort( m_nodemodel.id() );
@@ -2456,6 +2475,22 @@ bool NodeItemModel::setCompletion( Node *node, const QVariant &value, int role )
             m->addCommand( cmd );
         }
         return true;
+    }
+    if ( node->type() == Node::Type_Milestone ) {
+        Completion &c = static_cast<Task*>( node )->completion();
+        if ( value.toInt() > 0 ) {
+            QDateTime dt = QDateTime::currentDateTime();
+            QDate date = dt.date();
+            MacroCommand *m = new MacroCommand( i18n( "Set finished" ) );
+            m->addCommand( new ModifyCompletionStartedCmd( c, true ) );
+            m->addCommand( new ModifyCompletionStartTimeCmd( c, dt ) );
+            m->addCommand( new ModifyCompletionFinishedCmd( c, true ) );
+            m->addCommand( new ModifyCompletionFinishTimeCmd( c, dt ) );
+            m->addCommand( new ModifyCompletionPercentFinishedCmd( c, date, 100 ) );
+            emit executeCommand( m ); // also adds a new entry if necessary
+            return true;
+        }
+        return false;
     }
     return false;
 }
@@ -2572,6 +2607,7 @@ bool NodeItemModel::setData( const QModelIndex &index, const QVariant &value, in
         return ItemModelBase::setData( index, value, role );
     }
     if ( ( flags(index) &Qt::ItemIsEditable ) == 0 || role != Qt::EditRole ) {
+        kWarning()<<index<<value<<role;
         return false;
     }
     Node *n = node( index );
@@ -2626,7 +2662,7 @@ QVariant NodeItemModel::headerData( int section, Qt::Orientation orientation, in
     return ItemModelBase::headerData(section, orientation, role);
 }
 
-QItemDelegate *NodeItemModel::createDelegate( int column, QWidget *parent ) const
+QAbstractItemDelegate *NodeItemModel::createDelegate( int column, QWidget *parent ) const
 {
     switch ( column ) {
         //case NodeModel::NodeAllocation: return new ??Delegate( parent );
@@ -2643,6 +2679,7 @@ QItemDelegate *NodeItemModel::createDelegate( int column, QWidget *parent ) cons
         case NodeModel::NodeShutdownAccount: return new EnumDelegate( parent );
         case NodeModel::NodeShutdownCost: return new MoneyDelegate( parent );
 
+        case NodeModel::NodeCompleted: return new TaskCompleteDelegate( parent );
         case NodeModel::NodeRemainingEffort: return new DurationSpinBoxDelegate( parent );
         case NodeModel::NodeActualEffort: return new DurationSpinBoxDelegate( parent );
 
@@ -3483,7 +3520,7 @@ QVariant MilestoneItemModel::headerData( int section, Qt::Orientation orientatio
     return ItemModelBase::headerData(section, orientation, role);
 }
 
-QItemDelegate *MilestoneItemModel::createDelegate( int column, QWidget *parent ) const
+QAbstractItemDelegate *MilestoneItemModel::createDelegate( int column, QWidget *parent ) const
 {
     switch ( column ) {
         case NodeModel::NodeConstraint: return new EnumDelegate( parent );

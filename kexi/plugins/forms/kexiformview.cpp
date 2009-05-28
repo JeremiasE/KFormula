@@ -49,7 +49,6 @@
 #include <kexidb/utils.h>
 #include <kexidb/preparedstatement.h>
 #include <tableview/kexitableviewdata.h>
-#include <widget/kexipropertyeditorview.h>
 #include <widget/kexiqueryparameters.h>
 #include <kexiutils/utils.h>
 #include <KexiMainWindowIface.h>
@@ -1164,7 +1163,7 @@ KexiFormView::updateDataSourcePage()
         KoProperty::Set &set = form()->propertySet();
         dataSourcePartClass = set.propertyValue("dataSourcePartClass").toString();
         dataSource = set.propertyValue("dataSource").toString();
-        formPart()->dataSourcePage()->setDataSource(dataSourcePartClass, dataSource);
+        formPart()->dataSourcePage()->setFormDataSource(dataSourcePartClass, dataSource);
     }
 }
 

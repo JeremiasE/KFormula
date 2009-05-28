@@ -250,8 +250,6 @@ KisBrushSP KisBrush::fromXML( const QDomElement& element )
 
 }
 
-
-
 qint32 KisBrush::maskWidth(double scale, double angle) const
 {
     double width_ = width() * scale;
@@ -311,6 +309,7 @@ void KisBrush::mask(KisPaintDeviceSP dst, double scaleX, double scaleY, double a
 
 void KisBrush::mask(KisPaintDeviceSP dst, const KoColor& color, double scaleX, double scaleY, double angle, const KisPaintInformation& info, double subPixelX, double subPixelY) const
 {
+    // XXX: assumes color's colorspace is dst's colorspace!
     PlainColoringInformation pci(color.data());
     generateMask(dst, &pci, scaleX, scaleY, angle, info, subPixelX, subPixelY);
 }
@@ -323,7 +322,7 @@ void KisBrush::mask(KisPaintDeviceSP dst, const KisPaintDeviceSP src, double sca
 
 
 void KisBrush::generateMask(KisPaintDeviceSP dst,
-                            ColoringInformation* src,
+                            ColoringInformation* coloringInformation,
                             double scaleX, double scaleY, double angle,
                             const KisPaintInformation& info_,
                             double subPixelX, double subPixelY) const
@@ -375,23 +374,50 @@ void KisBrush::generateMask(KisPaintDeviceSP dst,
     qint32 maskWidth = outputMask->width();
     qint32 maskHeight = outputMask->height();
 
-    // Apply the alpha mask
-    KisHLineIteratorPixel hiter = dst->createHLineIterator(0, 0, maskWidth);
-    for (int y = 0; y < maskHeight; y++) {
-        while (! hiter.isDone()) {
-            int hiterConseq = 1; //hiter.nConseqHPixels();
-            cs->setAlpha(hiter.rawData(), OPACITY_OPAQUE, hiterConseq);
-            if (src) {
-                memcpy(hiter.rawData(), src->color(), pixelSize);
-                src->nextColumn();
-            }
-            cs->applyAlphaU8Mask(hiter.rawData(), maskData, hiterConseq);
-            hiter += hiterConseq;
-            maskData += hiterConseq;
+    quint8* dabData = new quint8[pixelSize * maskWidth * maskHeight];
+    quint8* dabPointer = dabData;
+    memset(dabData, OPACITY_TRANSPARENT, pixelSize * maskWidth * maskHeight);
+
+    if (coloringInformation) {
+        // cache the color, if the the coloringinfo is plain.
+        quint8* color = 0;
+        if (dynamic_cast<PlainColoringInformation*>(coloringInformation)) {
+            color = const_cast<quint8*>(coloringInformation->color());
         }
-        if (src) src->nextRow();
-        hiter.nextRow();
+        // Apply the alpha mask
+        for (int y = 0; y < maskHeight; y++) {
+            for (int x = 0; x < maskWidth; x++) {
+                // XXX: and what if the coloringInformation's color's colorspace isn't the one of the dab?
+                if (color) {
+                    memcpy(dabPointer, color, pixelSize);
+                }
+                else {
+                    memcpy(dabPointer, coloringInformation->color(), pixelSize);
+                }
+                cs->applyAlphaU8Mask(dabPointer, maskData, 1);
+                if (!color) {
+                    coloringInformation->nextColumn();
+                }
+                dabPointer += pixelSize;
+                maskData++;
+            }
+            if (!color) {
+                coloringInformation->nextRow();
+            }
+        }
     }
+    else {
+        // Apply the alpha mask
+        for (int y = 0; y < maskHeight; y++) {
+            for(int x = 0; x < maskWidth; x++) {
+                cs->applyAlphaU8Mask(dabPointer, maskData, 1);
+                dabPointer += pixelSize;
+                maskData++;
+            }
+        }
+    }
+    dst->writeBytes(dabData, 0, 0, maskWidth, maskHeight);
+    delete[] dabData;
 }
 
 KisPaintDeviceSP KisBrush::image(const KoColorSpace * colorSpace,

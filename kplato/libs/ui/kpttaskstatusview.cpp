@@ -236,11 +236,7 @@ void TaskStatusView::setScheduleManager( ScheduleManager *sm )
 
 Node *TaskStatusView::currentNode() const 
 {
-    Node * n = m_view->model()->node( m_view->selectionModel()->currentIndex() );
-    if ( n && n->type() != Node::Type_Task ) {
-        return 0;
-    }
-    return n;
+    return m_view->model()->node( m_view->selectionModel()->currentIndex() );
 }
 
 void TaskStatusView::setProject( Project *project )
@@ -282,11 +278,11 @@ void TaskStatusView::slotContextMenuRequested( Node *node, const QPoint& pos )
     QString name;
     switch ( node->type() ) {
         case Node::Type_Task:
+        case Node::Type_Milestone:
             name = "taskstatus_popup";
             break;
-        case Node::Type_Milestone:
-            break;
         case Node::Type_Summarytask:
+            name = "taskview_summary_popup";
             break;
         default:
             break;
@@ -318,8 +314,9 @@ void TaskStatusView::slotSplitView()
 void TaskStatusView::slotOptions()
 {
     kDebug();
-    TaskStatusViewSettingsDialog dlg( m_view );
-    dlg.exec();
+    TaskStatusViewSettingsDialog *dlg = new TaskStatusViewSettingsDialog( m_view, this );
+    dlg->exec();
+    delete dlg;
 }
 
 bool TaskStatusView::loadContext( const KoXmlElement &context )
@@ -466,8 +463,9 @@ void ProjectStatusView::setupGui()
 void ProjectStatusView::slotOptions()
 {
     kDebug();
-    ProjectStatusViewSettingsDialog dlg( m_view );
-    dlg.exec();
+    ProjectStatusViewSettingsDialog *dlg = new ProjectStatusViewSettingsDialog( m_view, this );
+    dlg->exec();
+    delete dlg;
 }
 
 bool ProjectStatusView::loadContext( const KoXmlElement &context )
@@ -850,6 +848,7 @@ void PerformanceStatusView::slotContextMenuRequested( Node *node, const QPoint& 
             name = "taskview_milestone_popup";
             break;
         case Node::Type_Summarytask:
+            name = "taskview_summary_popup";
             break;
         default:
             break;
@@ -895,8 +894,9 @@ void PerformanceStatusView::setupGui()
 void PerformanceStatusView::slotOptions()
 {
     kDebug();
-    PerformanceStatusViewSettingsDialog dlg( m_view );
-    dlg.exec();
+    PerformanceStatusViewSettingsDialog *dlg = new PerformanceStatusViewSettingsDialog( m_view, this );
+    dlg->exec();
+    delete dlg;
 }
 
 bool PerformanceStatusView::loadContext( const KoXmlElement &context )

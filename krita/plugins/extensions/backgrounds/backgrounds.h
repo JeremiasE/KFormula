@@ -1,5 +1,7 @@
 /*
- *  Copyright (c) 2009 Cyrille Berger <cberger@cberger.net>
+ * backgrounds.h -- Part of Krita
+ *
+ * Copyright (c) 2004 Boudewijn Rempt (boud@valdyas.org)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,16 +17,29 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
+#ifndef BACKGROUNDS_H
+#define BACKGROUNDS_H
 
-#include "kis_composite_ops_categorized_model.h"
-#include "kis_composite_ops_model.h"
+#include <kparts/plugin.h>
 
+class KisView2;
+class KisPainter;
 
-KisCompositeOpsCategorizedModel::KisCompositeOpsCategorizedModel()
+class Backgrounds : public KParts::Plugin
 {
-    setSortRole(KisCompositeOpsModel::CompositeOpSortRole);
-}
+    Q_OBJECT
+public:
+    Backgrounds(QObject *parent, const QStringList &);
+    virtual ~Backgrounds();
 
-KisCompositeOpsCategorizedModel::~KisCompositeOpsCategorizedModel()
-{
-}
+private slots:
+
+    void slotBackgrounds();
+
+private:
+
+    KisView2 * m_view;
+
+};
+
+#endif // BACKGROUNDS_H

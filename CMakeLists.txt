@@ -59,7 +59,6 @@ macro_optional_find_package(Exiv2)
 macro_log_feature(EXIV2_FOUND "Exiv2" "Image metadata library and tools" "http://www.exiv2.org" FALSE "0.16" "Required by Krita")
 
 
-
 if (APPLE)
    find_package(Carbon REQUIRED)
 endif (APPLE)

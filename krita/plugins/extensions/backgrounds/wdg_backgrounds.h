@@ -1,5 +1,7 @@
 /*
- *  Copyright (c) 2009 Cyrille Berger <cberger@cberger.net>
+ *  wdg_backgrounds.h -- part of KimageShop^WKrayon^WKrita
+ *
+ *  Copyright (c) 2009 Boudewijn Rempt <boud@valdyas.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,18 +17,27 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
+#ifndef WDG_BACKGROUNDS_H
+#define WDG_BACKGROUNDS_H
 
-#ifndef _KIS_COMPOSITE_OPS_CATEGORIZED_MODEL_H_
-#define _KIS_COMPOSITE_OPS_CATEGORIZED_MODEL_H_
+#include <QWidget>
+#include "ui_wdg_backgrounds.h"
 
-#include <KCategorizedSortFilterProxyModel>
+class WdgBackgrounds : public QWidget, public Ui::WdgBackgrounds
+{
+    Q_OBJECT
 
-class KisCompositeOpsCategorizedModel : public KCategorizedSortFilterProxyModel {
-    public:
-        KisCompositeOpsCategorizedModel();
-        ~KisCompositeOpsCategorizedModel();
+public:
+
+    WdgBackgrounds(QWidget* parent);
+
+public slots:
+
+    void addClicked();
+    void deleteClicked();
+    void resetClicked();
 };
 
 
 
-#endif
+#endif // WDG_BACKGROUNDS_H
