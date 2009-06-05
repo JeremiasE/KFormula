@@ -29,7 +29,7 @@
 TokenElement::TokenElement( BasicElement* parent ) : BasicElement( parent )
 {}
 
-const QList<BasicElement*> TokenElement::childElements()
+const QList<BasicElement*> TokenElement::childElements() const
 {
     // only return the mglyph elements
     QList<BasicElement*> tmpList;
@@ -138,10 +138,10 @@ bool TokenElement::setCursorTo(FormulaCursor* cursor, QPointF point) {
 }
 
 
-QLineF TokenElement::cursorLine(const FormulaCursor* cursor)
+QLineF TokenElement::cursorLine(int position) const
 {
     // inside tokens let the token calculate the cursor x offset
-    double tmp = cursorOffset( cursor );
+    double tmp = cursorOffset( position );
     QPointF top = absoluteBoundingRect().topLeft() + QPointF( tmp, 0 );
     QPointF bottom = top + QPointF( 0.0,height() );
     return QLineF(top,bottom);
@@ -178,11 +178,11 @@ bool TokenElement::moveCursor(FormulaCursor* newcursor, FormulaCursor* oldcursor
 }
 
 
-double TokenElement::cursorOffset( const FormulaCursor* cursor ) 
+double TokenElement::cursorOffset( const int position) const
 {
     int counter = 0;
     QPainterPath tmppath;
-    for( int i = 0; i < cursor->position(); i++ ) {
+    for( int i = 0; i < position; i++ ) {
         if( m_rawString[ i ] != QChar::ObjectReplacementCharacter ) {
 	    renderToPath( QString(m_rawString[i]), tmppath );
 	}

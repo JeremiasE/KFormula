@@ -23,7 +23,7 @@
 NumberElement::NumberElement( BasicElement* parent ) : TokenElement( parent )
 {}
 
-void NumberElement::renderToPath( const QString& raw, QPainterPath& path )
+void NumberElement::renderToPath( const QString& raw, QPainterPath& path ) const
 {
     path.addText( QPointF(path.boundingRect().right(),0.0), font(), raw );
 }

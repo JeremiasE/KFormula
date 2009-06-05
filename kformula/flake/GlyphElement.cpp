@@ -30,7 +30,7 @@
 GlyphElement::GlyphElement( BasicElement* parent ) : TokenElement( parent )
 {}
 
-void GlyphElement::renderToPath( const QString& raw, QPainterPath& path )
+void GlyphElement::renderToPath( const QString& raw, QPainterPath& path ) const
 {
     // try to lookup the char in the font database
     AttributeManager am;

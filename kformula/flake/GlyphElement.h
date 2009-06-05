@@ -39,7 +39,7 @@ public:
     ElementType elementType() const;
 
     /// Process @p raw and render it to @p path
-    void renderToPath( const QString& raw, QPainterPath& path );
+    void renderToPath( const QString& raw, QPainterPath& path) const;
 
 private:
     bool readMathMLAttributes( const KoXmlElement& element );

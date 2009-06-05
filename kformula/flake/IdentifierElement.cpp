@@ -26,7 +26,7 @@
 IdentifierElement::IdentifierElement( BasicElement* parent ) : TokenElement( parent )
 {}
 
-void IdentifierElement::renderToPath( const QString& raw, QPainterPath& path )
+void IdentifierElement::renderToPath( const QString& raw, QPainterPath& path ) const
 {
     AttributeManager manager;
 

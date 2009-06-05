@@ -29,7 +29,7 @@ QPainterPath OperatorElement::renderForFence( const QString& raw, Form form )
     return QPainterPath();
 }
 
-void OperatorElement::renderToPath( const QString& raw, QPainterPath& path )
+void OperatorElement::renderToPath( const QString& raw, QPainterPath& path ) const
 {
     Dictionary dict;
     dict.queryOperator( raw, determineOperatorForm() );
