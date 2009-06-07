@@ -63,6 +63,8 @@
 #include <kparts/event.h>
 #include <kparts/partmanager.h>
 
+#include <KConfigDialog>
+
 #include <KoQueryTrader.h>
 #include <KoTemplateCreateDia.h>
 
@@ -96,18 +98,20 @@
 #include "kptresourcedialog.h"
 #include "kptresource.h"
 #include "kptstandardworktimedialog.h"
-#include "kptconfigdialog.h"
 #include "kptwbsdefinitiondialog.h"
 #include "kptwpcontroldialog.h"
 #include "kptresourceassignmentview.h"
 #include "kpttaskstatusview.h"
 #include "kptsplitterview.h"
 #include "kptpertresult.h"
+#include "kpttaskdefaultpanel.h"
 
 #include "kptviewlistdialog.h"
 #include "kptviewlistdocker.h"
 #include "kptviewlist.h"
 #include "kptviewlistcommand.h"
+
+#include "kplatosettings.h"
 
 #include "KPtViewAdaptor.h"
 
@@ -1231,9 +1235,19 @@ void View::slotDefineWBS()
 void View::slotConfigure()
 {
     //kDebug();
-    ConfigDialog *dia = new ConfigDialog( getPart(), getPart() ->config(), this );
-    dia->exec();
-    delete dia;
+//     KConfigDialog *dia = new ConfigDialog( getPart(), getPart() ->config(), this );
+//     dia->exec();
+//     delete dia;
+
+    if( KConfigDialog::showDialog("KPlato Settings") ) {
+        return;
+    }
+    KConfigDialog *dialog = new KConfigDialog( this, "KPlato Settings", KPlatoSettings::self() );
+    dialog->addPage(new TaskDefaultPanel(), i18n("Task Defaults"), "task_defaults" );
+/*    connect(dialog, SIGNAL(settingsChanged(const QString&)), mainWidget, SLOT(loadSettings()));
+    connect(dialog, SIGNAL(settingsChanged(const QString&)), this, SLOT(loadSettings()));*/
+    dialog->show();
+    
 }
 
 

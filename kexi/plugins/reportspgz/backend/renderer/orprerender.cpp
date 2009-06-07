@@ -23,7 +23,7 @@
 #include "renderobjects.h"
 #include "orutils.h"
 #include "barcodes.h"
-//#include "graph.h" //TODO Use kdchart or kochart
+#include <kdeversion.h>
 
 #include <QPrinter>
 #include <QFontMetrics>
@@ -463,9 +463,7 @@ qreal ORPreRenderPrivate::renderSectionSize(const KRSectionData & sectionData)
             dataThis.setField(t->m_controlSource->value().toString());
             QPointF pos = t->m_pos.toScene();
             QSizeF size = t->m_size.toScene();
-            pos /= 100.0;
             pos += QPointF(_leftMargin, _yOffset);
-            size /= 100.0;
 
             QRectF trf(pos, size);
 
@@ -484,7 +482,7 @@ qreal ORPreRenderPrivate::renderSectionSize(const KRSectionData & sectionData)
                 QPrinter prnt(QPrinter::HighResolution);
                 QFontMetrics fm(f, &prnt);
 
-                int   intRectWidth    = (int)(trf.width() * prnt.resolution()) - 10;
+                int   intRectWidth    = (int)((t->m_size.toPoint().width() / 72) * prnt.resolution());
 
                 while (qstrValue.length()) {
                     idx = re.indexIn(qstrValue, pos);
@@ -591,10 +589,19 @@ qreal ORPreRenderPrivate::renderSection(const KRSectionData & sectionData)
             QString cs = f->m_controlSource->value().toString();
             if (cs.left(1) == "=") { //Everything after = is treated as code
                 if (!cs.contains("PageTotal()")) {
-                    QVariant v = _handler->evaluate(f->entityName());
+#if KDE_IS_VERSION(4,2,88)
+		      QVariant v = _handler->evaluate(cs.mid(1));
+#else
+		      QVariant v = _handler->evaluate(f->entityName());
+#endif
+                    
                     str = v.toString();
                 } else {
-                    str = f->entityName();
+#if KDE_IS_VERSION(4,2,88)
+		      str = cs.mid(1);
+#else
+		      str = f->entityName();
+#endif
                     _postProcText.append(tb);
                 }
             } else if (cs.left(1) == "$") { //Everything past $ is treated as a string 
@@ -615,18 +622,27 @@ qreal ORPreRenderPrivate::renderSection(const KRSectionData & sectionData)
 
 
         } else if (elemThis->type() == KRObjectData::EntityText) {
-            orData       dataThis;
+	    QString qstrValue;
+	    orData       dataThis;
             KRTextData * t = elemThis->toText();
-
-            populateData(t->data(), dataThis);
-
+	    
+	    QString cs = t->m_controlSource->value().toString();
+	    
+	    kDebug() << cs;
+	    
+	    if (cs.left(1) == "$") { //Everything past $ is treated as a string 
+	      qstrValue = cs.mid(1);
+	    } else {
+	      populateData(t->data(), dataThis);
+	      qstrValue = dataThis.getValue();
+	    }
+	    
             QPointF pos = t->m_pos.toScene();
             QSizeF size = t->m_size.toScene();
             pos += QPointF(_leftMargin, _yOffset);
-
+	    
             QRectF trf(pos, size);
 
-            QString qstrValue;
             int     intLineCounter  = 0;
             qreal   intStretch      = trf.top() - _yOffset;
             qreal   intBaseTop      = trf.top();
@@ -634,7 +650,8 @@ qreal ORPreRenderPrivate::renderSection(const KRSectionData & sectionData)
 
             QFont f = t->font();
 
-            qstrValue = dataThis.getValue();
+            kDebug() << qstrValue;
+	    
             if (qstrValue.length()) {
                 QRectF rect = trf;
 
@@ -645,8 +662,9 @@ qreal ORPreRenderPrivate::renderSection(const KRSectionData & sectionData)
                 QPrinter prnt(QPrinter::HighResolution);
                 QFontMetrics fm(f, &prnt);
 
-                int   intRectWidth    = (int)(trf.width() * prnt.resolution()) - 10;
-
+//                int   intRectWidth    = (int)(trf.width() * prnt.resolution()) - 10;
+		int   intRectWidth    = (int)((t->m_size.toPoint().width() / 72) * prnt.resolution());
+		 
                 while (qstrValue.length()) {
                     idx = re.indexIn(qstrValue, pos);
                     if (idx == -1) {
@@ -847,7 +865,11 @@ qreal ORPreRenderPrivate::renderSection(const KRSectionData & sectionData)
             kDebug() << "EntityCheck CS:" << cs;
 
             if (cs.left(1) == "=") {
-                str = _handler->evaluate(cd->entityName()).toString();
+#if KDE_IS_VERSION(4,2,88)
+		      str = _handler->evaluate(cs.mid(1)).toString();
+#else
+		      str = _handler->evaluate(f->entityName()).toString();
+#endif  
             } else {
                 QString qry = "Data Source";
                 QString clm = cd->m_controlSource->value().toString();

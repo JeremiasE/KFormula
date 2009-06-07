@@ -1,9 +1,9 @@
 /* This file is part of the KDE project
-   Copyright (C) 2004-2007 Dag Andersen <danders@get2net.dk>
+   Copyright (C) 2009 Dag Andersen <danders@get2net.dk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation;  either
+   License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
@@ -14,44 +14,29 @@
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- * Boston, MA 02110-1301, USA.
+   Boston, MA 02110-1301, USA.
 */
 
-#ifndef KPTCONFIGDIALOG_H
-#define KPTCONFIGDIALOG_H
+#ifndef KPTMYCOMBOBOX_P_H
+#define KPTMYCOMBOBOX_P_H
 
-#include <kpagedialog.h>
+#include "kplato_export.h"
 
-class QWidget;
+#include <KComboBox>
 
 namespace KPlato
 {
 
-class Part;
-class Project;
-class TaskDefaultPanel;
-//class ConfigBehaviorPanel;
-class Config;
-
-class ConfigDialog : public KPageDialog {
-    Q_OBJECT
+class MyComboBox : public KComboBox
+{
 public:
-    ConfigDialog(Part *part, Config &config, QWidget *parent=0, const char *name=0);
+    MyComboBox( QWidget *parent = 0 ) : KComboBox( parent ) {}
 
-protected slots:
-    void slotApply();
-    void slotOk();
-    void slotDefault();
-    void slotChanged();
-    
-private:
-    Part &m_part;
-    Config &m_config;
-    TaskDefaultPanel *m_taskDefaultPage;
-    //ConfigBehaviorPanel *m_behaviorPage;
+    void emitActivated( int i ) { emit activated( i ); }
 
 };
 
+
 } //KPlato namespace
 
-#endif // CONFIGDIALOG_H
+#endif // KPTMYCOMBOBOX_P_H

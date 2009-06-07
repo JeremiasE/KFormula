@@ -746,6 +746,9 @@ public:
     /// Removes as shape depending on this shape
     void removeDependee(KoShape * shape);
 
+    /// Returns if the given shape is dependent on this shape
+    bool hasDependee(KoShape * shape) const;
+
     /// Returns additional snap data the shape wants to have snapping to
     virtual KoSnapData snapData() const;
 
@@ -903,9 +906,6 @@ protected:
      * @param type the change type
      */
     void notifyChangedShape(ChangeType type);
-    
-    /// Returns if the given shape is dependent on this shape
-    bool hasDependee(KoShape * shape) const;
 
 private:
     friend class KoShapeManager;

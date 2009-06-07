@@ -55,6 +55,7 @@
 #include <KoColorSpace.h>
 #include <KoColor.h>
 #include "kis_node_commands_adapter.h"
+#include "commands/kis_selection_commands.h"
 
 KisMaskManager::KisMaskManager(KisView2 * view)
         : m_view(view)
@@ -95,7 +96,7 @@ void KisMaskManager::setup(KActionCollection * actionCollection)
     actionCollection->addAction("create_transformation_mask", m_createTransformationMask);
     connect(m_createTransformationMask, SIGNAL(triggered()), this, SLOT(createTransformationMask()));
 #endif
-    m_createSelectionMask = new KAction(KIcon("edit-paste"), i18n("Selection Mask..."), this);
+    m_createSelectionMask = new KAction(KIcon("edit-paste"), i18n("Local Selection"), this);
     actionCollection->addAction("create_selection_mask", m_createSelectionMask);
     connect(m_createSelectionMask, SIGNAL(triggered()), this, SLOT(createSelectionmask()));
 
@@ -103,47 +104,47 @@ void KisMaskManager::setup(KActionCollection * actionCollection)
     actionCollection->addAction("create_selection_from_mask", m_maskToSelection);
     connect(m_maskToSelection, SIGNAL(triggered()), this, SLOT(maskToSelection()));
 
-    m_maskToLayer = new KAction(i18n("Create Layer from Mask..."), this);
+    m_maskToLayer = new KAction(i18n("Create Layer from Mask"), this);
     actionCollection->addAction("create_layer_from_mask", m_maskToLayer);
     connect(m_maskToLayer, SIGNAL(triggered()), this, SLOT(maskToLayer()));
 
-    m_duplicateMask = new KAction(KIcon("edit-duplicate"), i18n("Duplicate Mask"), this);
+    m_duplicateMask = new KAction(KIcon("edit-copy"), i18n("Duplicate Current Mask"), this);
     actionCollection->addAction("duplicate_mask", m_duplicateMask);
     connect(m_duplicateMask, SIGNAL(triggered()), this, SLOT(duplicateMask()));
 
-    m_removeMask  = new KAction(KIcon("edit-delete"), i18n("Remove Mask"), this);
+    m_removeMask  = new KAction(KIcon("edit-delete"), i18n("Remove"), this);
     actionCollection->addAction("remove_mask", m_removeMask);
     connect(m_removeMask, SIGNAL(triggered()), this, SLOT(removeMask()));
 
-    m_showMask  = new KToggleAction(i18n("Show Mask"), this);
+    m_showMask  = new KToggleAction(i18n("Show"), this);
     actionCollection->addAction("show_mask", m_showMask);
     connect(m_showMask, SIGNAL(triggered()), this, SLOT(showMask()));
 
-    m_raiseMask = new KAction(KIcon("go-up"), i18n("Raise Mask"), this);
+    m_raiseMask = new KAction(KIcon("go-up"), i18n("Raise"), this);
     actionCollection->addAction("raise_mask", m_raiseMask);
     connect(m_raiseMask, SIGNAL(triggered()), this, SLOT(raiseMask()));
 
-    m_lowerMask  = new KAction(KIcon("go-down"), i18n("Lower Mask"), this);
+    m_lowerMask  = new KAction(KIcon("go-down"), i18n("Lower"), this);
     actionCollection->addAction("lower_mask", m_lowerMask);
     connect(m_lowerMask, SIGNAL(triggered()), this, SLOT(lowerMask()));
 
-    m_maskToTop  = new KAction(KIcon("go-top"), i18n("Move Mask to Top"), this);
+    m_maskToTop  = new KAction(KIcon("go-top"), i18n("To Top"), this);
     actionCollection->addAction("mask_to_top", m_maskToTop);
     connect(m_maskToTop, SIGNAL(triggered()), this, SLOT(maskToTop()));
 
-    m_maskToBottom = new KAction(KIcon("go-bottom"), i18n("Move Mask to Bottom"), this);
+    m_maskToBottom = new KAction(KIcon("go-bottom"), i18n("To Bottom"), this);
     actionCollection->addAction("mask_to_bottom", m_maskToBottom);
     connect(m_maskToBottom, SIGNAL(triggered()), this, SLOT(maskToBottom()));
 
-    m_mirrorMaskX = new KAction(KIcon("view-split-left-right"), i18n("Mirror Mask Horizontally"), this);
+    m_mirrorMaskX = new KAction(KIcon("view-split-left-right"), i18n("Mirror Horizontally"), this);
     actionCollection->addAction("mirror_mask_x", m_mirrorMaskX);
     connect(m_mirrorMaskX, SIGNAL(triggered()), this, SLOT(mirrorMaskX()));
 
-    m_mirrorMaskY  = new KAction(KIcon("view-split-top-bottom"), i18n("Mirror Mask Vertically"), this);
+    m_mirrorMaskY  = new KAction(KIcon("view-split-top-bottom"), i18n("Mirror Vertically"), this);
     actionCollection->addAction("mirror_mask_y", m_mirrorMaskY);
     connect(m_mirrorMaskY, SIGNAL(triggered()), this, SLOT(mirrorMaskY()));
 
-    m_maskProperties  = new KAction(KIcon("document-properties"), i18n("Mask Properties"), this);
+    m_maskProperties  = new KAction(KIcon("document-properties"), i18n("Properties..."), this);
     actionCollection->addAction("mask_properties", m_maskProperties);
     connect(m_maskProperties, SIGNAL(triggered()), this, SLOT(maskProperties()));
 
@@ -331,10 +332,12 @@ void KisMaskManager::maskToSelection()
     if (!m_activeMask) return;
     KisImageSP image = m_view->image();
     if (!image) return;
-    // TODO require a macro
-    image->setGlobalSelection(m_activeMask->selection()); // TODO that definitively require a command !
+    m_commandsAdapter->beginMacro(i18n("Mask to Selection"));
+    QUndoCommand* cmd = new KisSetGlobalSelectionCommand(image, 0, m_activeMask->selection());
+    image->undoAdapter()->addCommand(cmd);
     m_commandsAdapter->removeNode(m_activeMask);
     m_activeMask = 0;
+    m_commandsAdapter->endMacro();
 }
 
 void KisMaskManager::maskToLayer()
@@ -362,14 +365,16 @@ void KisMaskManager::maskToLayer()
         while (!dstiter.isDone()) {
             cs->setAlpha(color.data(), dstiter.selectedness(), 1);
             memcpy(dstiter.rawData(), color.data(), pixelsize);
+            ++dstiter;
         }
         dstiter.nextRow();
     }
 
-    // TODO make a macro (require a string)
+    m_commandsAdapter->beginMacro(i18n("Layer from Mask"));
     m_commandsAdapter->removeNode(m_activeMask);
     m_activeMask = 0;
     m_commandsAdapter->addNode(layer, activeLayer->parent(), activeLayer);
+    m_commandsAdapter->endMacro();
 }
 
 void KisMaskManager::duplicateMask()

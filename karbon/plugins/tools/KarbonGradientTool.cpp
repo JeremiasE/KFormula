@@ -83,21 +83,14 @@ void KarbonGradientTool::paint( QPainter &painter, const KoViewConverter &conver
     painter.setBrush( Qt::green ); //TODO make configurable
     painter.setPen( Qt::blue ); //TODO make configurable
 
-    // paint all the strategies
-    foreach( GradientStrategy *strategy, m_strategies    )
-    {
-        if( strategy == m_currentStrategy )
-            continue;
+    foreach ( GradientStrategy *strategy, m_strategies ) {
+        bool current = ( strategy == m_currentStrategy );
         painter.save();
-        strategy->paint( painter, converter, false );
+        if ( current ) {
+            painter.setBrush( Qt::red ); //TODO make configurable
+        }
+        strategy->paint( painter, converter, current );
         painter.restore();
-    }
-
-    // paint selected strategy with another color
-    if( m_currentStrategy )
-    {
-        painter.setBrush( Qt::red ); //TODO make configurable
-        m_currentStrategy->paint( painter, converter, true );
     }
 }
 
@@ -119,10 +112,10 @@ void KarbonGradientTool::mousePressEvent( KoPointerEvent *event )
             m_currentStrategy->hitLine( event->point, *m_canvas->viewConverter(), true ) )
         {
             m_currentStrategy->setEditing( true );
-            m_currentStrategy->repaint();
+            m_currentStrategy->repaint( *m_canvas->viewConverter() );
             return;
         }
-        m_currentStrategy->repaint();
+        m_currentStrategy->repaint(*m_canvas->viewConverter());
     }
     // are we hovering over a gradient ?
     if( m_hoverStrategy )
@@ -135,14 +128,15 @@ void KarbonGradientTool::mousePressEvent( KoPointerEvent *event )
             m_currentStrategy = m_hoverStrategy;
             m_hoverStrategy = 0;
             m_currentStrategy->setEditing( true );
-            m_currentStrategy->repaint();
+            m_currentStrategy->repaint(*m_canvas->viewConverter());
             return;
         }
     }
 
-    QRectF roi( QPointF(), QSizeF( GradientStrategy::handleRadius(), GradientStrategy::handleRadius() ) );
+    qreal grabDist = m_canvas->viewConverter()->viewToDocumentX( GradientStrategy::grabSensitivity() ); 
+    QRectF roi( QPointF(), QSizeF(grabDist, grabDist) );
     roi.moveCenter( event->point );
-    // check if we on a shape without a gradient yet
+    // check if we are on a shape without a gradient yet
     QList<KoShape*> shapes = m_canvas->shapeManager()->shapesAt( roi );
     KoSelection * selection = m_canvas->shapeManager()->selection();
 
@@ -218,15 +212,15 @@ void KarbonGradientTool::mouseMoveEvent( KoPointerEvent *event )
             if( m_currentStrategy->selection() == GradientStrategy::Handle )
                 mousePos = m_canvas->snapGuide()->snap( mousePos, event->modifiers() );
 
-            m_currentStrategy->repaint();
+            m_currentStrategy->repaint(*m_canvas->viewConverter());
             m_currentStrategy->handleMouseMove( mousePos, event->modifiers() );
-            m_currentStrategy->repaint();
+            m_currentStrategy->repaint(*m_canvas->viewConverter());
             return;
         }
         // are we on a gradient handle ?
         else if( m_currentStrategy->hitHandle( event->point, *m_canvas->viewConverter(), false ) )
         {
-            m_currentStrategy->repaint();
+            m_currentStrategy->repaint(*m_canvas->viewConverter());
             useCursor( KarbonCursor::needleMoveArrow() );
             emit statusTextChanged( i18n("Drag to move gradient position.") );
             return;
@@ -234,7 +228,7 @@ void KarbonGradientTool::mouseMoveEvent( KoPointerEvent *event )
         // are we on a gradient stop handle ?
         else if( m_currentStrategy->hitStop( event->point, *m_canvas->viewConverter(), false ) )
         {
-            m_currentStrategy->repaint();
+            m_currentStrategy->repaint(*m_canvas->viewConverter());
             useCursor( KarbonCursor::needleMoveArrow() );
             const QGradient * g = m_currentStrategy->gradient();
             if( g && g->stops().count() > 2 )
@@ -246,7 +240,7 @@ void KarbonGradientTool::mouseMoveEvent( KoPointerEvent *event )
         // are we near the gradient line ?
         else if( m_currentStrategy->hitLine( event->point, *m_canvas->viewConverter(), false ) )
         {
-            m_currentStrategy->repaint();
+            m_currentStrategy->repaint(*m_canvas->viewConverter());
             useCursor( Qt::SizeAllCursor );
             emit statusTextChanged( i18n("Drag to move gradient position. Double click to insert color stop.") );
             return;
@@ -451,7 +445,7 @@ void KarbonGradientTool::initialize()
                 if( fillStrategy )
                 {
                     m_strategies.insert( shape, fillStrategy );
-                    fillStrategy->repaint();
+                    fillStrategy->repaint(*m_canvas->viewConverter());
                 }
             }
         }
@@ -465,7 +459,7 @@ void KarbonGradientTool::initialize()
                 if( strokeStrategy )
                 {
                     m_strategies.insert( shape, strokeStrategy );
-                    strokeStrategy->repaint();
+                    strokeStrategy->repaint(*m_canvas->viewConverter());
                 }
             }
         }
@@ -488,7 +482,8 @@ void KarbonGradientTool::initialize()
 
     delete m_gradient;
     GradientStrategy * strategy = m_currentStrategy ? m_currentStrategy : m_strategies.values().first();
-    strategy->setHandleRadius( m_canvas->resourceProvider()->handleRadius() );
+    GradientStrategy::setHandleRadius( m_canvas->resourceProvider()->handleRadius() );
+    GradientStrategy::setGrabSensitivity( m_canvas->resourceProvider()->grabSensitivity() );
     m_gradient = KarbonGradientHelper::cloneGradient( strategy->gradient() );
     if( m_gradientWidget )
     {
@@ -523,11 +518,14 @@ void KarbonGradientTool::resourceChanged( int key, const QVariant & res )
     {
         case KoCanvasResource::HandleRadius:
             foreach( GradientStrategy *strategy, m_strategies )
-                strategy->repaint();
+                strategy->repaint(*m_canvas->viewConverter());
             GradientStrategy::setHandleRadius( res.toUInt() );
             foreach( GradientStrategy *strategy, m_strategies )
-                strategy->repaint();
+                strategy->repaint(*m_canvas->viewConverter());
         break;
+        case KoCanvasResource::GrabSensitivity:
+            GradientStrategy::setGrabSensitivity( res.toUInt() );
+            break;
         default:
             return;
     }
