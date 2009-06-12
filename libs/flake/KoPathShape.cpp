@@ -638,7 +638,7 @@ QList<KoPathSegment> KoPathShape::segmentsAt(const QRectF &r)
     int subpathCount = m_subpaths.count();
     for (int subpathIndex = 0; subpathIndex < subpathCount; ++subpathIndex) {
         KoSubpath * subpath = m_subpaths[subpathIndex];
-        int pointCount = subpath[subpathIndex].count();
+        int pointCount = subpath->count();
         bool subpathClosed = isClosedSubpath(subpathIndex);
         for (int pointIndex = 0; pointIndex < pointCount; ++pointIndex) {
             if (pointIndex == (pointCount - 1) && ! subpathClosed)
@@ -735,7 +735,10 @@ bool KoPathShape::isClosedSubpath(int subpathIndex)
     if (subpath == 0)
         return false;
 
-    return subpath->last()->properties() & KoPathPoint::CloseSubpath;
+    const bool firstClosed = subpath->first()->properties() & KoPathPoint::CloseSubpath;
+    const bool lastClosed = subpath->last()->properties() & KoPathPoint::CloseSubpath;
+    
+    return firstClosed && lastClosed;
 }
 
 bool KoPathShape::insertPoint(KoPathPoint* point, const KoPathPointIndex &pointIndex)
@@ -897,7 +900,7 @@ KoPathPointIndex KoPathShape::openSubpath(const KoPathPointIndex &pointIndex)
     // make the first point a start node
     subpath->first()->setProperty(KoPathPoint::StartSubpath);
     // make the last point an end node
-    subpath->last()->unsetProperty(KoPathPoint::StopSubpath);
+    subpath->last()->setProperty(KoPathPoint::StopSubpath);
 
     return pathPointIndex(oldStartPoint);
 }

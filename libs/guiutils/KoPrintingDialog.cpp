@@ -59,7 +59,7 @@ public:
     ~KoPrintingDialogPrivate() {
         stop = true;
         delete progress;
-        if(painter && painter->isActive()) {
+        if (painter && painter->isActive()) {
             painter->end();
         }
 
@@ -70,7 +70,6 @@ public:
     }
 
     void preparePage(const QVariant &page) {
-
         const int pageNumber = page.toInt();
 
         KoUpdaterPtr updater = updaters.at(index-1);
@@ -81,7 +80,7 @@ public:
 
         QRectF clipRect;
 
-        if(! stop) {
+        if (! stop) {
             clipRect = parent->preparePage(pageNumber);
         }
 
@@ -119,7 +118,7 @@ public:
     void resetValues() {
         index = 0;
         updaters.clear();
-        if(painter && painter->isActive())
+        if (painter && painter->isActive())
             painter->end();
         delete painter;
         painter = 0;
@@ -135,9 +134,9 @@ public:
             shapeManager->paint(*painter, zoomer, true);
         painter->restore(); // state before page preparation
 
-        if(parent->property("blocking").toBool())
+        if (parent->property("blocking").toBool())
             return;
-        if(!stop && index < pages.count()) {
+        if (!stop && index < pages.count()) {
             pageNumber->setText(i18n("Printing page %1", QString::number(pages[index])));
             action->execute(pages[index++]);
             return;
@@ -158,7 +157,7 @@ public:
     }
 
     void stopPressed() {
-        if(stop) { // pressed a second time.
+        if (stop) { // pressed a second time.
             dialog->done(0);
             return;
         }
@@ -184,7 +183,8 @@ public:
     KoProgressUpdater *progress;
     QLabel *pageNumber;
     QPushButton *button;
-    QList<int> pages;
+    QList<int> pageRange; ///< user requested list of pages
+    QList<int> pages; ///< effecive list of pages
     QList< KoUpdaterPtr > updaters;
     QDialog *dialog;
     KoPrintJob::RemovePolicy removePolicy;
@@ -227,20 +227,24 @@ KoPrintingDialog::~KoPrintingDialog()
     delete d;
 }
 
-void KoPrintingDialog::setShapeManager(KoShapeManager *sm) {
+void KoPrintingDialog::setShapeManager(KoShapeManager *sm)
+{
     d->shapeManager = sm;
 }
 
-KoShapeManager *KoPrintingDialog::shapeManager() const {
+KoShapeManager *KoPrintingDialog::shapeManager() const
+{
     return d->shapeManager;
 }
 
-void KoPrintingDialog::setPageRange(const QList<int> &pages) {
-    if(d->index == 0) // can't change after we started
-        d->pages = pages;
+void KoPrintingDialog::setPageRange(const QList<int> &pages)
+{
+    if (d->index == 0) // can't change after we started
+        d->pageRange = pages;
 }
 
-QPainter & KoPrintingDialog::painter() const {
+QPainter & KoPrintingDialog::painter() const
+{
     if (d->painter == 0) {
         d->painter = new QPainter(d->printer);
         d->painter->save(); // state before page preparation (3)
@@ -248,18 +252,20 @@ QPainter & KoPrintingDialog::painter() const {
     return *d->painter;
 }
 
-bool KoPrintingDialog::isStopped() const {
+bool KoPrintingDialog::isStopped() const
+{
     return d->stop;
 }
 
-void KoPrintingDialog::startPrinting(RemovePolicy removePolicy) {
+void KoPrintingDialog::startPrinting(RemovePolicy removePolicy)
+{
     d->removePolicy = removePolicy;
+    d->pages = d->pageRange;
     if (d->pages.isEmpty()) { // auto-fill from min/max
         if (d->printer->fromPage() == 0) { // all pages, no range.
             for (int i=documentFirstPage(); i <= documentLastPage(); i++)
                 d->pages.append(i);
-        }
-        else {
+        } else {
             for (int i=d->printer->fromPage(); i <= d->printer->toPage(); i++)
                 d->pages.append(i);
         }
@@ -270,14 +276,38 @@ void KoPrintingDialog::startPrinting(RemovePolicy removePolicy) {
     }
 
     const bool blocking = property("blocking").toBool();
-    if (!blocking)
-        d->dialog->show();
-    if(d->index == 0 && d->pages.count() > 0 && d->printer) {
+    if (d->index == 0 && d->pages.count() > 0 && d->printer) {
+        if (!blocking)
+            d->dialog->show();
         d->stop = false;
         delete d->painter;
         d->painter = 0;
         d->zoomer.setZoomAndResolution(100, d->printer->resolution(), d->printer->resolution());
         d->progress->start();
+
+        if (d->printer->numCopies() > 1) {
+            QList<int> oldPages = d->pages;
+            if (d->printer->collateCopies()) { // means we print whole doc at once
+                for (int count = 1; count < d->printer->numCopies(); ++count)
+                    d->pages.append(oldPages);
+            } else {
+                d->pages.clear();
+                foreach (int page, oldPages) {
+                    for (int count = 1; count < d->printer->numCopies(); ++count)
+                        d->pages.append(page);
+                }
+            }
+        }
+        if (d->printer->pageOrder() == QPrinter::LastPageFirst) {
+            QList<int> pages = d->pages;
+            d->pages.clear();
+            QList<int>::Iterator iter = pages.end();
+            do {
+                --iter;
+                d->pages << *iter;
+            } while (iter != pages.begin());
+        }
+
         if (blocking) {
             d->resetValues();
             foreach (int page, d->pages) {
@@ -290,9 +320,8 @@ void KoPrintingDialog::startPrinting(RemovePolicy removePolicy) {
             printingDone();
             d->stop = true;
             d->resetValues();
-        }
-        else {
-            for(int i=0; i < d->pages.count(); i++)
+        } else {
+            for (int i=0; i < d->pages.count(); i++)
                 d->updaters.append(d->progress->startSubtask()); // one per page
             d->pageNumber->setText(i18n("Printing page %1", QString::number(d->pages[d->index])));
             d->action->execute(d->pages[d->index++]);
@@ -300,7 +329,8 @@ void KoPrintingDialog::startPrinting(RemovePolicy removePolicy) {
     }
 }
 
-QPrinter &KoPrintingDialog::printer() {
+QPrinter &KoPrintingDialog::printer()
+{
     return *d->printer;
 }
 

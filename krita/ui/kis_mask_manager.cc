@@ -56,6 +56,7 @@
 #include <KoColor.h>
 #include "kis_node_commands_adapter.h"
 #include "commands/kis_selection_commands.h"
+#include "kis_layer_manager.h"
 
 KisMaskManager::KisMaskManager(KisView2 * view)
         : m_view(view)
@@ -201,6 +202,7 @@ void KisMaskManager::createTransparencyMask(KisNodeSP parent, KisNodeSP above)
     m_commandsAdapter->addNode(mask, parent, above);
     mask->setDirty();
     activateMask(mask);
+    masksUpdated();
 }
 
 
@@ -256,6 +258,7 @@ void KisMaskManager::createFilterMask(KisNodeSP parent, KisNodeSP above)
     } else {
         m_view->image()->removeNode(mask);
     }
+    masksUpdated();
 }
 
 void KisMaskManager::createTransformationMask()
@@ -268,6 +271,7 @@ void KisMaskManager::createTransformationMask()
         else
             createTransformationMask(activeLayer, m_activeMask);
     }
+    masksUpdated();
 }
 
 void KisMaskManager::createTransformationMask(KisNodeSP parent, KisNodeSP above)
@@ -293,6 +297,7 @@ void KisMaskManager::createTransformationMask(KisNodeSP parent, KisNodeSP above)
         activateMask(mask);
         mask->setDirty(selection->selectedExactRect());
     }
+    masksUpdated();
 }
 
 void KisMaskManager::createSelectionmask()
@@ -322,6 +327,7 @@ void KisMaskManager::createSelectionMask(KisNodeSP parent, KisNodeSP above)
     }
     mask->setName(i18n("Selection"));     // XXX:Auto-increment a number here, like with layers
     m_commandsAdapter->addNode(mask, parent, above);
+    masksUpdated();
 }
 
 
@@ -392,6 +398,7 @@ void KisMaskManager::removeMask()
     if (!m_activeMask) return;
     if (!m_view->image()) return;
     m_commandsAdapter->removeNode(m_activeMask);
+    masksUpdated();
 }
 
 void KisMaskManager::mirrorMaskX()
@@ -422,7 +429,7 @@ void KisMaskManager::mirrorMaskX()
 
 void KisMaskManager::mirrorMaskY()
 {
-    // XXX_NODE: This is a load of copy-past from KisLayerManager -- how can I fix that?
+    // XXX_NODE: This is a load of copy-past from Kisupanager -- how can I fix that?
     // XXX_NODE: we should also mirror the shape-based part of the selection!
     if (!m_activeMask) return;
 
@@ -524,6 +531,7 @@ void KisMaskManager::maskProperties()
 void KisMaskManager::masksUpdated()
 {
     m_view->updateGUI();
+    m_view->layerManager()->updateGUI();
 }
 
 void KisMaskManager::showMask()

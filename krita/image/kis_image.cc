@@ -843,12 +843,15 @@ KisLayerSP KisImage::flattenLayer(KisLayerSP layer)
         undoAdapter()->addCommand(new KisImageLayerRemoveCommand(this, node));
         node = node->nextSibling();
     }
+    undoAdapter()->addCommand(new KisImageLayerRemoveCommand(this, layer));
+    
 
     QList<const KisMetaData::Store*> srcs;
     srcs.append(layer->metaData());
 
     const KisMetaData::MergeStrategy* strategy = KisMetaData::MergeStrategyRegistry::instance()->get("Smart");
     QList<double> scores;
+    scores.append(1.0); //Just give some score, there only is one layer
     strategy->merge(newLayer->metaData(), srcs, scores);
 
     undoAdapter()->endMacro();

@@ -47,8 +47,10 @@ set( kpresenterprivate_LIB_SRCS
      KPrPlaceholderTextStrategy.cpp
      KPrPresentationHighlightWidget.cpp
      KPrPresentationDrawWidget.cpp
+     KPrPresentationBlackWidget.cpp
      KPrPresentationStrategy.cpp
      KPrPresentationHighlightStrategy.cpp
+     KPrPresentationBlackStrategy.cpp
      KPrPresentationStrategyInterface.cpp
      KPrPresentationDrawStrategy.cpp
 
@@ -130,6 +132,12 @@ kde4_add_app_icon(kpresenter_KDEINIT_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/../pics/h
 
 kde4_add_kdeinit_executable( kpresenter ${kpresenter_KDEINIT_SRCS})
 
+if (Q_WS_MAC)
+   set_target_properties(kpresenter PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.template)
+   set_target_properties(kpresenter PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER "org.koffice.kpresenter")
+   set_target_properties(kpresenter PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KPresenter 2")
+endif (Q_WS_MAC)
+
 target_link_libraries(kdeinit_kpresenter  ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} komain )
 
 install(TARGETS kdeinit_kpresenter ${INSTALL_TARGETS_DEFAULT_ARGS})
@@ -143,3 +151,5 @@ install( FILES kpresenter.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
 
 ### GUI files ###
 install( FILES kpresenter.rc kpresenter_readonly.rc DESTINATION ${DATA_INSTALL_DIR}/kpresenter)
+
+install( FILES kpresenterrc DESTINATION ${CONFIG_INSTALL_DIR} )

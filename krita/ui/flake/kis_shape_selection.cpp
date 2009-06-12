@@ -288,17 +288,12 @@ void KisShapeSelection::removeChild(KoShape *object)
 QPainterPath KisShapeSelection::selectionOutline()
 {
     if (m_dirty) {
-        QList<KoShape*> shapesList = iterator();
+        QList<KoShape*> shapesList = childShapes();
 
         QPainterPath outline;
-        KoPathShape* pathShape;
         foreach(KoShape * shape, shapesList) {
-            pathShape = dynamic_cast<KoPathShape*>(shape);
-            if (pathShape) {
                 QMatrix shapeMatrix = shape->absoluteTransformation(0);
-
                 outline = outline.united(shapeMatrix.map(shape->outline()));
-            }
         }
         m_outline = outline;
         m_dirty = false;

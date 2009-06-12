@@ -171,7 +171,7 @@ public:
 
     /**
      * @brief store the shape data as ODF XML.
-     * This is the method that will be called when saving a shape as a described in¬
+     * This is the method that will be called when saving a shape as a described in
      * OpenDocument 9.2 Drawing Shapes.
      * @see saveOdfAttributes
      */
@@ -267,7 +267,7 @@ public:
      *
      * @return the position of the shape
      */
-    virtual QPointF position() const;
+    QPointF position() const;
 
     /**
      * @brief Check if the shape is hit on position
@@ -877,12 +877,7 @@ protected:
      * This is called whenever the shape, position rotation or scale properties were altered.
      * @param type an indicator which type was changed.
      */
-    virtual void shapeChanged(ChangeType type) {
-        Q_UNUSED(type);
-    }
-
-    /// This is called whenever a shape this shape depends on has changed
-    virtual void notifyShapeChanged(KoShape * shape, ChangeType type);
+    virtual void shapeChanged(ChangeType type, KoShape *shape = 0);
 
     /**
      * Set the property collision detection.

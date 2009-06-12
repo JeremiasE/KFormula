@@ -601,7 +601,7 @@ void KarbonView::ungroupSelection()
         KoShapeContainer *container = dynamic_cast<KoShapeContainer*>( shape );
         if( container )
         {
-            new KoShapeUngroupCommand( container, container->iterator(), cmd );
+            new KoShapeUngroupCommand( container, container->childShapes(), cmd );
             new KoShapeDeleteCommand( d->part, container, cmd );
         }
     }
@@ -631,6 +631,9 @@ void KarbonView::combinePath()
         KoPathShape *path = dynamic_cast<KoPathShape*>( shape );
         if( path )
         {
+            KoParameterShape * paramShape = dynamic_cast<KoParameterShape*>(path);
+            if( paramShape && paramShape->isParametricShape() )
+                continue;
             paths << path;
             selection->deselect( shape );
         }
