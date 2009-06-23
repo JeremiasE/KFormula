@@ -75,12 +75,9 @@ public:
     ///inherited from BasicElement
     virtual bool insertChild ( int position, BasicElement* child );
     
-    /**
-     * Remove a child element
-     * @param cursor The cursor holding the position where to remove
-     * @param element The BasicElement to remove
-     */ 
-    void removeChild( FormulaCursor* cursor, BasicElement* element );
+    ///remove the letter after @p position and return a pointer to the glyph if it was one.
+    QList<GlyphElement* > removeText(int position, int length = 1);
+    
 
     /**
      * Implement the cursor behaviour for the element
@@ -106,13 +103,13 @@ public:
     virtual int length() const;
     
     ///inherited from BasicElement
-    virtual bool isToken() const;
-    
-    ///inherited from BasicElement
     virtual QLineF cursorLine(int position) const;
     
     ///inherited from BasicElement
     virtual bool setCursorTo(FormulaCursor* cursor, QPointF point);
+    
+    ///set m_rawString to @p text and empty the glyph list
+    void setText(const QString &text);
     
 protected:
     /// Read contents of the token element. Content should be unicode text strings or mglyphs
@@ -136,6 +133,8 @@ private:
 
     /// A painter path holding text content for fast painting
     QPainterPath m_contentPath;
+
+        GlyphElement* tmpglyph;
 };
 
 #endif // TOKENELEMENT_H

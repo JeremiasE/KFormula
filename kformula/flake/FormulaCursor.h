@@ -24,6 +24,7 @@
 
 #include "kformula_export.h"
 #include <QString>
+#include <QPair>
 
 class BasicElement;
 class QString;
@@ -145,35 +146,61 @@ public:
      * @param selecting When true the cursor is selecting
      */ 
     void setSelecting( bool selecting );
-
+    
     /// set the start position of the selection
     void setSelectionStart(int position);
     
     /// @return @c true when the cursor is selecting
+    bool isSelecting() const;
+    
+    /// @return @c true when the cursor is selecting and the selection is not empty
     bool hasSelection() const;
     
     /// @return the selection starting position
-    int selectionStartPosition() const;
+    int mark() const;
     
     /// select the element completely
     void selectElement(BasicElement* element);
     
+    /// return the end and beginning of the current selection where the first element is the smaller one
+    QPair<int,int> selection() const;
+    
+    
 private:
-    /// @return true when the cursor is inside a token element
+    /// @return true if the cursor is inside a token element
     bool insideToken() const;
 
-    /// @return true when the cursor is inside a row or inferred row
+    /// @return true if the cursor is inside a row or inferred row
     bool insideInferredRow() const;
+    
+    /// @return true if the cursor is inside a element with fixed number of children
+    bool insideFixedElement() const;
+    
+    /// @return true if the cursor is inside an empty element
+    bool insideEmptyElement() const;
+    
+    /// @return if the element next to the cursor is an empty element it is returned, otherwise 0
+    BasicElement* nextToEmpty() const;
+    
+    /// @return checks if the cursor is valid were it is
+    bool isAccepted() const;
+    
+    /// @return if the element is next to an empty element, it is placed there
+    bool moveToEmpty();
+    
+    QString tokenType(const QChar& character) const;
 
+    bool performMovement(CursorDirection direction, FormulaCursor* oldcursor);
+    
 private:
     /// The element that is currently left to the cursor
     BasicElement* m_currentElement;
 
     /// The position of the cursor in the current element
-    int m_positionInElement;
+    int m_position;
     
     /// The position where the current selection starts in the current element
-    int m_selectionStartPosition;
+    int m_mark;
     
     /// The direction the cursor is moving to
     CursorDirection m_direction;

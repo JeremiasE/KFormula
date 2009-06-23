@@ -184,7 +184,7 @@ QLineF TableElement::cursorLine ( int position ) const
 
 bool TableElement::setCursorTo(FormulaCursor* cursor, QPointF point) 
 {
-    if (cursor->hasSelection()) {
+    if (cursor->isSelecting()) {
         return false;
     }
     int i;
@@ -206,7 +206,7 @@ bool TableElement::moveCursor(FormulaCursor* newcursor, FormulaCursor* oldcursor
             //we are in front of a table row
             return false;
 	    } else {
-            if (newcursor->hasSelection()) {
+            if (newcursor->isSelecting()) {
                 newcursor->moveTo( this , p-1 );
             } else {
                 newcursor->moveTo( m_rows[ p / 2 ] , m_rows[ p / 2 ]->length() );
@@ -218,7 +218,7 @@ bool TableElement::moveCursor(FormulaCursor* newcursor, FormulaCursor* oldcursor
             //we are behind a table row
             return false;
 	    } else {
-            if (newcursor->hasSelection()) {
+            if (newcursor->isSelecting()) {
                 newcursor->moveTo( this , p+1 );
             } else {
                 newcursor->moveTo( m_rows[ p / 2 ] , 0 );
@@ -256,7 +256,7 @@ int TableElement::length() const
 bool TableElement::acceptCursor( const FormulaCursor* cursor )
 {
 //    return false;
-    return cursor->hasSelection();
+    return cursor->isSelecting();
 }
 
 

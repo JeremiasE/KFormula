@@ -47,10 +47,11 @@ BasicElement::~BasicElement()
 
 void BasicElement::paint( QPainter& painter, AttributeManager* )
 { 
+    painter.save();
     painter.setPen( QPen( Qt::blue ) );
+    painter.setBrush(QBrush (Qt::red));
     painter.drawRect( QRectF(0.0, 0.0, width(), height()) );
-//    painter.setPen( QPen( Qt::red, 0, Qt::DashLine ) );
-//    painter.drawLine( QPointF(0.0, baseLine()), QPointF(width(), baseLine()));
+    painter.restore();
 }
 
 void BasicElement::layout( const AttributeManager* )
@@ -116,8 +117,10 @@ bool BasicElement::insertChild( int position, BasicElement* element )
     return false;
 }
 
-void BasicElement::removeChild( FormulaCursor*, BasicElement* )
-{ /* do nothing a BasicElement has no children */ }
+bool BasicElement::replaceChild( BasicElement* oldelement, BasicElement* newelement)
+{
+    return false;
+}
 
 const QList<BasicElement*> BasicElement::childElements() const
 {
@@ -288,10 +291,6 @@ int BasicElement::positionOfChild(BasicElement* child) const {
     return -1;
 }
 
-bool BasicElement::isToken() const {
-    return false;
-}
-
 void BasicElement::setParentElement( BasicElement* parent )
 {
     m_parentElement = parent;
@@ -302,5 +301,21 @@ void BasicElement::setScaleFactor( double scaleFactor )
     m_scaleFactor = scaleFactor;
 }
 
+
+BasicElement* BasicElement::elementBefore ( int position )
+{
+    return 0;
+}
+
+BasicElement* BasicElement::elementAfter ( int position )
+{
+    return 0;
+}
+
+QList< BasicElement* > BasicElement::elementsBetween ( int pos1, int pos2 ) const
+{
+    QList<BasicElement*> tmp;
+    return tmp;
+}
 
 

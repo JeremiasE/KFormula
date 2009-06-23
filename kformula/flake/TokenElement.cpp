@@ -58,10 +58,6 @@ int TokenElement::length() const
     return m_rawString.length();
 }
 
-bool TokenElement::isToken() const {
-    return true;
-}
-
 void TokenElement::layout( const AttributeManager* am )
 {
     kDebug()<<"Layouting";
@@ -105,8 +101,37 @@ bool TokenElement::insertChild( int position, BasicElement* child )
 bool TokenElement::insertText ( int position, const QString& text )
 {
     m_rawString.insert (position,text);
+    return true;
 }
 
+
+QList<GlyphElement*> TokenElement::removeText ( int position, int length )
+{
+    QList<GlyphElement*> tmp;
+    //find out, how many glyphs we have
+    int counter=0;
+    for (int i=position; i<position+length; ++i) {
+        if (m_rawString[ position ] == QChar::ObjectReplacementCharacter) {
+            counter++;
+        }
+    }
+    
+    int start=0;
+    //find out where we should start removing glyphs
+    if (counter>0) {
+        for (int i=0; i<position; ++i) {
+            if (m_rawString[position] == QChar::ObjectReplacementCharacter) {
+                start++;
+            }
+        }
+    } 
+    for (int i=start; i<start+counter; ++i) {
+        tmp.append(m_glyphs.takeAt(i));
+    }
+    m_rawString.remove(position,length);
+    return tmp;
+    
+}
 
 bool TokenElement::setCursorTo(FormulaCursor* cursor, QPointF point) {
     int counter = 0;
@@ -152,12 +177,6 @@ QLineF TokenElement::cursorLine(int position) const
     QPointF top = absoluteBoundingRect().topLeft() + QPointF( tmp, 0 );
     QPointF bottom = top + QPointF( 0.0,height() );
     return QLineF(top,bottom);
-}
-
-
-void TokenElement::removeChild( FormulaCursor* cursor, BasicElement* child )
-{
-    m_rawString.remove( cursor->position(), 1 );
 }
 
 bool TokenElement::acceptCursor( const FormulaCursor* cursor )
@@ -206,6 +225,15 @@ QFont TokenElement::font() const
     return m_font;
 }
 
+
+void TokenElement::setText ( const QString& text )
+{
+    //TODO: check for ObjectReplacement characters
+    m_rawString=text;
+    m_glyphs.empty();
+}
+
+
 bool TokenElement::readMathMLContent( const KoXmlElement& element )
 {
     // iterate over all child elements ( possible embedded glyphs ) and put the text
@@ -250,4 +278,3 @@ void TokenElement::writeMathMLContent( KoXmlWriter* writer ) const
         }
     }
 }
-

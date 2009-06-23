@@ -84,10 +84,9 @@ bool RowElement::insertChild( int position, BasicElement* child )
     }
 }
 
-void RowElement::removeChild( FormulaCursor* cursor, BasicElement* child )
+bool RowElement::removeChild( BasicElement* child )
 {
-    Q_UNUSED( cursor )
-    m_childElements.removeAll( child );
+    return m_childElements.removeOne(child);
 }
 
 bool RowElement::acceptCursor( const FormulaCursor* cursor )
@@ -104,7 +103,8 @@ bool RowElement::moveCursor(FormulaCursor* newcursor, FormulaCursor* oldcursor)
         //TODO: check what happens with linebreaks in <mspace> elements
         return false;
     }
-    if (newcursor->hasSelection()) {
+    if (newcursor->isSelecting
+()) {
         switch(newcursor->direction()) {
         case MoveLeft:
             newcursor->setPosition(newcursor->position()-1);
@@ -164,9 +164,11 @@ bool RowElement::setCursorTo(FormulaCursor* cursor, QPointF point)
 	cursor->setPosition(length());
 	return true;
     } else {
-	if (cursor->hasSelection()) {
+	if (cursor->isSelecting
+()) {
 	    //we don't need to change current element because we are already in this element
-	    if (cursor->selectionStartPosition()<=i) {
+	    if (cursor->mark
+()<=i) {
 		cursor->setPosition(i+1);
 	    }
 	    else {
@@ -210,4 +212,41 @@ void RowElement::writeMathMLContent( KoXmlWriter* writer ) const
     foreach( BasicElement* tmp, m_childElements )
         tmp->writeMathML( writer );
 }
+
+
+BasicElement* RowElement::elementAfter ( int position )
+{
+    if (position<length()) {
+        return m_childElements[position];
+    } else {
+        return 0;
+    }
+}
+
+BasicElement* RowElement::elementBefore ( int position )
+{
+    if (position>1) {
+        return m_childElements[position-1];
+    } else {
+        return 0;
+    }
+}
+
+QList< BasicElement* > RowElement::elementsBetween ( int pos1, int pos2 ) const
+{
+    return m_childElements.mid(pos1,pos2-pos1);
+}
+
+
+bool RowElement::replaceChild ( BasicElement* oldelement, BasicElement* newelement )
+{
+        m_childElements.replace(m_childElements.indexOf(oldelement),newelement);
+}
+
+
+
+
+
+
+
 
