@@ -134,7 +134,7 @@ void TableElement::determineDimensions()
 
 double TableElement::columnWidth( int column )
 {
-    if( m_colWidths.isEmpty() )
+    //if( m_colWidths.isEmpty() )
         determineDimensions();
 
     return m_colWidths[ column ];
@@ -142,7 +142,7 @@ double TableElement::columnWidth( int column )
 
 double TableElement::rowHeight( TableRowElement* row )
 {
-    if( m_rowHeights.isEmpty() )
+    //if( m_rowHeights.isEmpty() )
         determineDimensions();
 
     return m_rowHeights[ m_rows.indexOf( row ) ];
