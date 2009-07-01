@@ -201,44 +201,44 @@ bool TableElement::moveCursor(FormulaCursor* newcursor, FormulaCursor* oldcursor
 {
     int p=newcursor->position();
     switch (newcursor->direction()) {
-	case MoveLeft:
-	    if (p%2==0) {
+    case MoveLeft:
+        if (p%2==0) {
             //we are in front of a table row
             return false;
-	    } else {
+        } else {
             if (newcursor->isSelecting()) {
                 newcursor->moveTo( this , p-1 );
             } else {
                 newcursor->moveTo( m_rows[ p / 2 ] , m_rows[ p / 2 ]->length() );
             }
             break;
-	    }
-	case MoveRight:
-	    if (p%2==1) {
+        }
+    case MoveRight:
+        if (p%2==1) {
             //we are behind a table row
             return false;
-	    } else {
+        } else {
             if (newcursor->isSelecting()) {
                 newcursor->moveTo( this , p+1 );
             } else {
                 newcursor->moveTo( m_rows[ p / 2 ] , 0 );
             }
             break;
-	    }
-	case MoveUp:
-	    if (p<=1) {
+        }
+    case MoveUp:
+        if (p<=1) {
             return false;
-	    } else {
+        } else {
             newcursor->moveTo(this,p-2);
             break;
-	    }
-	case MoveDown:
-	    if (p<(m_rows.count()-1)*2) {
+        }
+    case MoveDown:
+        if (p<(m_rows.count()-1)*2) {
             newcursor->moveTo(this,p+2); 
             break;
-	    } else {
+        } else {
             return false;
-	    }
+        }
     }
     return true;
 }
@@ -320,7 +320,7 @@ bool TableElement::readMathMLContent( const KoXmlElement& element )
             return false;
 
         m_rows << static_cast<TableRowElement*>( tmpElement );
-	tmpElement->readMathML( tmp );
+    tmpElement->readMathML( tmp );
     }
 
     return true;
@@ -329,6 +329,6 @@ bool TableElement::readMathMLContent( const KoXmlElement& element )
 void TableElement::writeMathMLContent( KoXmlWriter* writer ) const
 {
     foreach( TableRowElement* tmpRow, m_rows )  // write each mtr element
-	tmpRow->writeMathML( writer );
+    tmpRow->writeMathML( writer );
 }
 
