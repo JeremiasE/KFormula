@@ -140,30 +140,30 @@ bool TokenElement::setCursorTo(FormulaCursor* cursor, QPointF point) {
     kDebug()<<"point: "<<point<<"-"<<boundingRect().width();
     cursor->setCurrentElement(this);
     if (boundingRect().width()<point.x()) {
-	    cursor->setPosition(length());
-	    return true;
+        cursor->setPosition(length());
+        return true;
     }
     double oldx=0;
     //Find the letter we clicked on
     for( i = 0; i < m_rawString.length(); i++ ) {
         //add a character to the string
-	if( m_rawString[ i ] != QChar::ObjectReplacementCharacter ) {
-	    renderToPath( QString(m_rawString[i]), tmppath );
-	}
-        else {
-	    m_glyphs[ counter ]->renderToPath( QString(), tmppath );
-	    counter++;
+        if( m_rawString[ i ] != QChar::ObjectReplacementCharacter ) {
+            renderToPath( QString(m_rawString[i]), tmppath );
         }
- 	//check if we found the character, on which the point is
-	if (tmppath.boundingRect().right()>=point.x()) {
-	    break;
-	}
-	//save the old width of the path
-	oldx=tmppath.boundingRect().right();
+            else {
+                m_glyphs[ counter ]->renderToPath( QString(), tmppath );
+                counter++;
+            }
+        //check if we found the character, on which the point is
+        if (tmppath.boundingRect().right()>=point.x()) {
+            break;
+        }
+        //save the old width of the path
+        oldx=tmppath.boundingRect().right();
     }
     //Find out, if we should place the cursor before or after the character
     if ((point.x()-oldx)>(tmppath.boundingRect().right()-point.x())) {	
-	i++;
+        i++;
     }
     cursor->setPosition(i);
     return true;
@@ -186,19 +186,19 @@ bool TokenElement::acceptCursor( const FormulaCursor* cursor )
 }
 
 bool TokenElement::moveCursor(FormulaCursor* newcursor, FormulaCursor* oldcursor) {
-    if ( (newcursor->direction()==MoveUp) ||
-	 (newcursor->direction()==MoveDown) ||
-	 (newcursor->isHome() && newcursor->direction()==MoveLeft) ||
-	 (newcursor->isEnd() && newcursor->direction()==MoveRight) ) {
-	return false;
+    if ((newcursor->direction()==MoveUp) ||
+        (newcursor->direction()==MoveDown) ||
+        (newcursor->isHome() && newcursor->direction()==MoveLeft) ||
+        (newcursor->isEnd() && newcursor->direction()==MoveRight) ) {
+        return false;
     }
     switch( newcursor->direction() ) {
-	case MoveLeft:
-	    newcursor->setPosition(newcursor->position()-1);
-	    break;
-	case MoveRight:
-	    newcursor->setPosition(newcursor->position()+1);
-	    break;
+    case MoveLeft:
+        newcursor->setPosition(newcursor->position()-1);
+        break;
+    case MoveRight:
+        newcursor->setPosition(newcursor->position()+1);
+        break;
     }
     return true;
 }

@@ -103,27 +103,26 @@ bool RowElement::moveCursor(FormulaCursor* newcursor, FormulaCursor* oldcursor)
         //TODO: check what happens with linebreaks in <mspace> elements
         return false;
     }
-    if (newcursor->isSelecting
-()) {
+    if (newcursor->isSelecting()) {
         switch(newcursor->direction()) {
         case MoveLeft:
             newcursor->setPosition(newcursor->position()-1);
             break;
         case MoveRight:
             newcursor->setPosition(newcursor->position()+1);
-    // 	    break;
-	}
+            break;
+        }
     } else {
-	switch(newcursor->direction()) {
-	case MoveLeft:
-	    newcursor->setCurrentElement(m_childElements[newcursor->position()-1]);
-	    newcursor->moveEnd();
-	    break;
-	case MoveRight:
-	    newcursor->setCurrentElement(m_childElements[newcursor->position()]);
-	    newcursor->moveHome();
-	    break;
-	}
+        switch(newcursor->direction()) {
+        case MoveLeft:
+            newcursor->setCurrentElement(m_childElements[newcursor->position()-1]);
+            newcursor->moveEnd();
+            break;
+        case MoveRight:
+            newcursor->setCurrentElement(m_childElements[newcursor->position()]);
+            newcursor->moveHome();
+            break;
+        }
     }
     return true;
 }
@@ -147,38 +146,35 @@ QLineF RowElement::cursorLine(int position) const {
 bool RowElement::setCursorTo(FormulaCursor* cursor, QPointF point)
 {
     if (m_childElements.isEmpty() || point.x()<m_childElements[0]->origin().x()) {
-	cursor->setCurrentElement(this);
-	cursor->setPosition(0);
-	return true;
+        cursor->setCurrentElement(this);
+        cursor->setPosition(0);
+        return true;
     }
     int i;
     for (i=0; i<m_childElements.count(); i++) {
-	//Find the child element the point is in
-	if (m_childElements[i]->boundingRect().right()>=point.x()) {
-	    break;
-	}
+        //Find the child element the point is in
+        if (m_childElements[i]->boundingRect().right()>=point.x()) {
+            break;
+        }
     }
     //check if the point is behind all child elements
     if (i==m_childElements.count()) {
-	cursor->setCurrentElement(this);
-	cursor->setPosition(length());
-	return true;
+        cursor->setCurrentElement(this);
+        cursor->setPosition(length());
+        return true;
     } else {
-	if (cursor->isSelecting
-()) {
-	    //we don't need to change current element because we are already in this element
-	    if (cursor->mark
-()<=i) {
-		cursor->setPosition(i+1);
-	    }
-	    else {
-		cursor->setPosition(i);
-	    }
-	    return true;
-	} else {
-	    point-=m_childElements[i]->origin();
-	    return m_childElements[i]->setCursorTo(cursor,point);
-	}
+        if (cursor->isSelecting()) {
+            //we don't need to change current element because we are already in this element
+            if (cursor->mark()<=i) {
+                cursor->setPosition(i+1);
+            } else {
+                cursor->setPosition(i);
+            }
+            return true;
+        } else {
+            point-=m_childElements[i]->origin();
+            return m_childElements[i]->setCursorTo(cursor,point);
+        }
     }
 }
 

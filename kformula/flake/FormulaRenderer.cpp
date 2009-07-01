@@ -57,25 +57,25 @@ void FormulaRenderer::paintElement( QPainter& p, BasicElement* element )
 void FormulaRenderer::layoutElement( BasicElement* element )
 {
     if (element==0) {
-	return;
+        return;
     } else if (element->elementType() == Table) {
-	//Tables need special attention to ensure the correct layouting order
-	foreach( BasicElement* row, element->childElements() ) {
-	    foreach( BasicElement* entry, row->childElements() ) {
-		entry->setScaleFactor( m_attributeManager->scriptLevelScaling( element ) );
-		layoutElement( entry );
-	    }
-	}
-	foreach( BasicElement* row, element->childElements() ) {
-	    row->setScaleFactor( m_attributeManager->scriptLevelScaling( element ) );
-	    row->layout( m_attributeManager );    
-	}	
+        //Tables need special attention to ensure the correct layouting order
+        foreach( BasicElement* row, element->childElements() ) {
+            foreach( BasicElement* entry, row->childElements() ) {
+                entry->setScaleFactor( m_attributeManager->scriptLevelScaling( element ) );
+                layoutElement( entry );
+            }
+        }
+        foreach( BasicElement* row, element->childElements() ) {
+            row->setScaleFactor( m_attributeManager->scriptLevelScaling( element ) );
+            row->layout( m_attributeManager );    
+        }
     } else {
-	foreach( BasicElement* tmp, element->childElements() ) {
-	    // TODO set displaystyle...
-	    tmp->setScaleFactor( m_attributeManager->scriptLevelScaling( element ) );
-	    layoutElement( tmp );              // first layout all children
-	}
+        foreach( BasicElement* tmp, element->childElements() ) {
+            // TODO set displaystyle...
+            tmp->setScaleFactor( m_attributeManager->scriptLevelScaling( element ) );
+            layoutElement( tmp );              // first layout all children
+        }
     }
     element->layout( m_attributeManager );      // actually layout the element
 }

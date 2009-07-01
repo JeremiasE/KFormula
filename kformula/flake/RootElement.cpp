@@ -143,51 +143,47 @@ int RootElement::positionOfChild(BasicElement* child) const
 bool RootElement::setCursorTo(FormulaCursor* cursor, QPointF point) 
 {
     if (cursor->isSelecting()) {
-	if (point.x()<(m_exponent->boundingRect().right()+m_radicand->boundingRect().left())/2.) {
-	    //the point is left of the radicand
-	    if (point.x()<m_exponent->boundingRect().left()) {
-		//the point is left of the exponent
-		cursor->moveTo(this, 0);
-		return true;
-	    } else {
-		//the point is on the exponent
-		if (cursor->mark() == 0) {
-		    cursor->moveTo(this, 1);
-		    return true;
-		} else {
-		    cursor->moveTo(this, 0);
-		    return true;
-		}
-	    }
-	} else {
-	    //the point is right of the exponent
-	    if (point.x()>m_radicand->boundingRect().right()) {
-		//the point is right of the radicand
-		cursor->moveTo(this, 3);
-		return true;
-	    } else {
-		//the point is on the radicand
-		if (cursor->mark() == 3) {
-		    cursor->moveTo(this, 2);
-		    return true;
-		} else {
-		    cursor->moveTo(this, 3);
-		    return true;
-		}
-	    }
-	}
-	//clean up the selectionStart
-	if (cursor->mark()==1 && cursor->position()>1) {
-	    cursor->setSelectionStart(2);
-	} else if (cursor->mark()==2 && cursor->position()<2) {
-	    cursor->setSelectionStart(1);
-	}
+        if (point.x()<(m_exponent->boundingRect().right()+m_radicand->boundingRect().left())/2.) {
+            //the point is left of the radicand
+            if (point.x()<m_exponent->boundingRect().left()) {
+                //the point is left of the exponent
+                cursor->moveTo(this, 0);
+                return true;
+            } else {
+                //the point is on the exponent
+                if (cursor->mark() == 0) {
+                    cursor->moveTo(this, 1);
+                    return true;
+                } else {
+                    cursor->moveTo(this, 0);
+                    return true;
+                }
+            }
+        } else {
+            //the point is right of the exponent
+            if (point.x()>m_radicand->boundingRect().right()) {
+                //the point is right of the radicand
+                cursor->moveTo(this, 3);
+                return true;
+            } else {
+                //the point is on the radicand
+                if (cursor->mark() == 3) {
+                    cursor->moveTo(this, 2);
+                    return true;
+                } else {
+                    cursor->moveTo(this, 3);
+                    return true;
+                }
+            }
+        }
+        //clean up the selectionStart
+        fixSelection(cursor);
     } else {
-	if (m_exponent->boundingRect().contains(point)) {
-	    return m_exponent->setCursorTo(cursor, point-m_exponent->origin());
-	} else {
-	    return m_radicand->setCursorTo(cursor, point-m_radicand->origin());
-	}
+        if (m_exponent->boundingRect().contains(point)) {
+            return m_exponent->setCursorTo(cursor, point-m_exponent->origin());
+        } else {
+            return m_radicand->setCursorTo(cursor, point-m_radicand->origin());
+        }
     }
 }
 
@@ -200,23 +196,23 @@ bool RootElement::moveCursor(FormulaCursor* newcursor, FormulaCursor* oldcursor)
             return false;
         case 1:
             if (newcursor->isSelecting()) {
-            newcursor->moveTo(this,0);
+                newcursor->moveTo(this,0);
             } else {
-            newcursor->moveTo(m_exponent, m_exponent->length());
+                newcursor->moveTo(m_exponent, m_exponent->length());
             }
             break;
         case 2:
             if (newcursor->isSelecting()) {
-            newcursor->moveTo(this,0);
+                newcursor->moveTo(this,0);
             } else {
-            newcursor->moveTo(this,1);
+                newcursor->moveTo(this,1);
             }
             break;
         case 3:
             if (newcursor->isSelecting()) {
-            newcursor->moveTo(this,2);
+                newcursor->moveTo(this,2);
             } else {
-            newcursor->moveTo(m_radicand,m_radicand->length());
+                newcursor->moveTo(m_radicand,m_radicand->length());
             }
             break;
         }
@@ -227,47 +223,47 @@ bool RootElement::moveCursor(FormulaCursor* newcursor, FormulaCursor* oldcursor)
             return false;
         case 2:
             if (newcursor->isSelecting()) {
-            newcursor->moveTo(this,3);
+                newcursor->moveTo(this,3);
             } else {
-            newcursor->moveTo(m_radicand,0);
+                newcursor->moveTo(m_radicand,0);
             }
             break;
         case 1:
             if (newcursor->isSelecting()) {
-            newcursor->moveTo(this,3);
+                newcursor->moveTo(this,3);
             } else {
-            newcursor->moveTo(this,2);
+                newcursor->moveTo(this,2);
             }
             break;
         case 0:
             if (newcursor->isSelecting()) {
-            newcursor->moveTo(this,1);
+                newcursor->moveTo(this,1);
             } else {
-            newcursor->moveTo(m_exponent,0);
+                newcursor->moveTo(m_exponent,0);
             }
             break;
         }
         break;
     case MoveUp:
         if (newcursor->isSelecting()) {
-        return false;
+            return false;
         }
         if (newcursor->position()>=2) {
-        newcursor->moveTo(this,1);
-        break;
+            newcursor->moveTo(this,1);
+            break;
         } else {
-        return false;
+            return false;
         }
         break;
     case MoveDown:
         if (newcursor->isSelecting()) {
-        return false;
+            return false;
         }
         if (newcursor->position()<=1) {
-        newcursor->moveTo(this,2);
-        break;
+            newcursor->moveTo(this,2);
+            break;
         } else {
-        return false;
+            return false;
         }
         break;
     }

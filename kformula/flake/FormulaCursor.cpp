@@ -65,7 +65,7 @@ void FormulaCursor::paint( QPainter& painter ) const
 //    painter.drawLine( origin+QPointF(0.0,baseline),
 //        origin+QPointF(m_currentElement->width(), baseline) );
     pen.setStyle(Qt::DotLine);
-    //Only here for debug purpose
+    //Only here for debug purpose for now
     switch(m_currentElement->elementType()) {
     case Number:
         pen.setColor(Qt::red);
